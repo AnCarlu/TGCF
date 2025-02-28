@@ -1,12 +1,12 @@
 package com.myapps.tgcf.paef.ui.view
 
-import android.widget.Space
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,11 +14,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -26,30 +30,46 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.graphics.drawable.IconCompat.IconType
 import com.myapps.tgcf.R
 import kotlin.math.roundToInt
+
+val primaryColor = Color(0xFF7689A9)
+val secondaryColor = Color(0xFF2D4671)
+val backIconColor = Color(0xFFAA6939)
+val backgroundColor = Color(0xFFFFFFFF)
+val borderColor = Color(0xFF152C55)
+val textPrimaryColor = Color(0xFF000000)
+val thumbColor = Color(0xFFAA9539)
+val successColor = Color(0xFF4CAF50)
+val warningColor = Color(0xFFFFC107)
+val errorColor = Color(0xFFFF5252)
+val accentColor = Color(0xFFFF4081)
 
 @Preview
 @Composable
 fun Screen() {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxSize()) {
         Result(
             Modifier
                 .weight(1f)
@@ -94,12 +114,21 @@ fun Screen() {
 @Composable
 fun Result(modifier: Modifier) {
     var resutl by remember { mutableStateOf("") }
-    var state by remember { mutableStateOf(true) }
-    val cardColor = colorResource(id = R.color.success_color)
+    var age by remember { mutableStateOf("") }
+    var state by remember { mutableStateOf(false) }
+    var showPlaceholder by remember { mutableStateOf(true) }
+    var isManSelected by remember { mutableStateOf(false) }
+
     Card(
         modifier
-            .fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.primary_color))
+            .fillMaxWidth()
+            .shadow(4.dp, shape = RoundedCornerShape(8.dp))
+            .border(
+                width = 4.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(8.dp)
+            ),
+        colors = CardDefaults.cardColors(containerColor = primaryColor)
     ) {
         Row {
             Box(
@@ -107,14 +136,88 @@ fun Result(modifier: Modifier) {
                     .weight(1f)
                     .fillMaxHeight()
             ) {
-                Column {
-                    Row { }
+                Box(modifier = Modifier.padding(top = 16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text("APL")
-                        Spacer(Modifier.padding(8.dp))
-                        Checkbox(checked = state, onCheckedChange = { state = !state })
-                    }
 
+                        Icon(
+                            painter = painterResource(R.drawable.man),
+                            contentDescription = "Man",
+                            modifier = Modifier
+                                .size(96.dp)
+                                .clickable { isManSelected = true }
+                                .alpha(if (isManSelected) 1f else 0.8 f),
+                            tint =  if(isManSelected) backIconColor else Color.Gray
+                        )
+                        Icon(
+                            painter = painterResource(R.drawable.woman),
+                            contentDescription = "Woman",
+                            modifier = Modifier.size(96.dp)
+                                .clickable { isManSelected = false }
+                                .alpha(if (isManSelected) 0.8f else 1f),
+                            tint =  if(!isManSelected) backIconColor else Color.Gray
+                        )
+                    }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(start = 24.dp, bottom = 8.dp)
+                ) {
+                    Column(modifier.fillMaxWidth()) {
+
+                        TextField(
+                            value = age,
+                            onValueChange = { age = it },
+                            placeholder = {
+                                if (showPlaceholder) {
+                                    Text(
+                                        "Edad",
+                                        style = TextStyle(
+                                            fontStyle = FontStyle.Italic,
+                                            fontSize = 16.sp,
+                                            fontFamily = FontFamily.SansSerif,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                }
+                            },
+                            modifier = Modifier
+                                .onFocusChanged {
+                                    if (it.isFocused) {
+                                        showPlaceholder = false
+                                    }
+                                }
+                                .size(72.dp),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = primaryColor,
+                                unfocusedContainerColor = primaryColor,
+                                focusedTextColor = textPrimaryColor,
+                                unfocusedTextColor = textPrimaryColor,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent
+                            )
+                        )
+
+                        Spacer(Modifier.padding(8.dp))
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+
+                            Text(
+                                "APL",
+                                style = TextStyle(
+                                    color = textPrimaryColor,
+                                    fontSize = 16.sp,
+                                    fontStyle = FontStyle.Italic,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                            Spacer(Modifier.padding(8.dp))
+                            Checkbox(checked = state, onCheckedChange = { state = !state })
+                        }
+                    }
                 }
             }
 
@@ -123,24 +226,41 @@ fun Result(modifier: Modifier) {
                     .weight(1f)
                     .fillMaxHeight()
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text("Resultado de las pruebas")
-                    TextField(
-                        value = resutl,
-                        onValueChange = { resutl = it },
-                        modifier = Modifier.size(55.dp),
-                        maxLines = 1,
-                        enabled = false,
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = cardColor,
-                            unfocusedContainerColor = cardColor,
-                            focusedTextColor = colorResource(id = R.color.text_primary),
-                            unfocusedTextColor = colorResource(id = R.color.text_primary)
+
+                Box(modifier = Modifier.align(Alignment.Center)) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            "Nota Final",
+                            style = TextStyle(
+                                color = textPrimaryColor,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Serif,
+                                textAlign = TextAlign.Center,
+                                fontStyle = FontStyle.Italic
+                            ),
                         )
-                    )
+                        Spacer(Modifier.padding(16.dp))
+
+                        TextField(
+                            value = resutl,
+                            onValueChange = { resutl = it },
+                            modifier = Modifier.size(55.dp),
+                            maxLines = 1,
+                            readOnly = true,
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = primaryColor,
+                                unfocusedContainerColor = primaryColor,
+                                focusedTextColor = textPrimaryColor,
+                                unfocusedTextColor = textPrimaryColor,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -152,13 +272,17 @@ fun Result(modifier: Modifier) {
 
 @Composable
 fun Push(modifier: Modifier) {
-    var myText by remember { mutableStateOf("0") }
+    var myText by remember { mutableStateOf("") }
     var sliderPosition by remember { mutableStateOf(0f) }
-    val cardColor = colorResource(id = R.color.success_color)
     Card(
         modifier
-            .fillMaxSize(),
-        colors = CardDefaults.cardColors(containerColor = cardColor)
+            .fillMaxSize()
+            .border(
+                width = 4.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(10.dp)
+            ),
+        colors = CardDefaults.cardColors(containerColor = primaryColor)
     ) {
         Box(
             modifier = Modifier
@@ -167,7 +291,7 @@ fun Push(modifier: Modifier) {
         ) {
             Box(
                 modifier = Modifier
-                    .background(cardColor)
+                    .background(primaryColor)
                     .align(Alignment.Center)
                     .padding(top = 10.dp)
             ) {
@@ -180,7 +304,7 @@ fun Push(modifier: Modifier) {
             Text(
                 "Flexiones",
                 style = TextStyle(
-                    color = colorResource(id = R.color.text_primary),
+                    color = textPrimaryColor,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
@@ -209,10 +333,11 @@ fun Push(modifier: Modifier) {
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = cardColor,
-                    unfocusedContainerColor = cardColor,
-                    focusedTextColor = colorResource(id = R.color.text_primary),
-                    unfocusedTextColor = colorResource(id = R.color.text_primary)
+                    focusedContainerColor = primaryColor,
+                    unfocusedContainerColor = primaryColor,
+                    focusedTextColor = textPrimaryColor,
+                    unfocusedTextColor = textPrimaryColor,
+                    unfocusedIndicatorColor = Color.Transparent
                 )
             )
             Slider(
@@ -224,7 +349,12 @@ fun Push(modifier: Modifier) {
                 },
                 modifier = Modifier.padding(start = 24.dp, end = 24.dp),
                 valueRange = 0f..10f,
-                steps = 9
+                steps = 9,
+                colors = SliderDefaults.colors(
+                    thumbColor = thumbColor, //Color del circulo deslizable
+                    activeTrackColor = secondaryColor, //Color de la parte activa del Slider
+                    inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
+                )
             )
         }
     }
@@ -232,13 +362,18 @@ fun Push(modifier: Modifier) {
 
 @Composable
 fun Abs(modifier: Modifier) {
-    var myText by remember { mutableStateOf("0") }
+    var myText by remember { mutableStateOf("") }
     var sliderPosition by remember { mutableStateOf(0f) }
-    var cardColor = colorResource(id = R.color.success_color)
+
     Card(
         modifier
-            .fillMaxSize(),
-        colors = CardDefaults.cardColors(containerColor = cardColor)
+            .fillMaxSize()
+            .border(
+                width = 4.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(8.dp)
+            ),
+        colors = CardDefaults.cardColors(containerColor = primaryColor)
     ) {
         Box(
             modifier = Modifier
@@ -247,7 +382,7 @@ fun Abs(modifier: Modifier) {
         ) {
             Box(
                 modifier = Modifier
-                    .background(cardColor)
+                    .background(primaryColor)
                     .align(Alignment.Center)
                     .padding(top = 15.dp)
             ) {
@@ -260,7 +395,7 @@ fun Abs(modifier: Modifier) {
             Text(
                 "Abdominales",
                 style = TextStyle(
-                    color = colorResource(id = R.color.text_primary),
+                    color = textPrimaryColor,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
@@ -289,10 +424,11 @@ fun Abs(modifier: Modifier) {
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = cardColor,
-                    unfocusedContainerColor = cardColor,
-                    focusedTextColor = colorResource(id = R.color.text_primary),
-                    unfocusedTextColor = colorResource(id = R.color.text_primary)
+                    focusedContainerColor = primaryColor,
+                    unfocusedContainerColor = primaryColor,
+                    focusedTextColor = textPrimaryColor,
+                    unfocusedTextColor = textPrimaryColor,
+                    unfocusedIndicatorColor = Color.Transparent
                 )
             )
             Slider(
@@ -304,7 +440,12 @@ fun Abs(modifier: Modifier) {
                 },
                 modifier = Modifier.padding(start = 24.dp, end = 24.dp),
                 valueRange = 0f..10f,
-                steps = 9
+                steps = 9,
+                colors = SliderDefaults.colors(
+                    thumbColor = thumbColor, //Color del circulo deslizable
+                    activeTrackColor = secondaryColor, //Color de la parte activa del Slider
+                    inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
+                )
             )
         }
     }
@@ -312,13 +453,17 @@ fun Abs(modifier: Modifier) {
 
 @Composable
 fun Speed(modifier: Modifier) {
-    var myText by remember { mutableStateOf("0") }
+    var myText by remember { mutableStateOf("") }
     var sliderPosition by remember { mutableStateOf(0f) }
-    var cardColor = colorResource(id = R.color.success_color)
     Card(
         modifier
-            .fillMaxSize(),
-        colors = CardDefaults.cardColors(containerColor = cardColor)
+            .fillMaxSize()
+            .border(
+                width = 4.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(8.dp)
+            ),
+        colors = CardDefaults.cardColors(containerColor = primaryColor)
     ) {
         Box(
             modifier = Modifier
@@ -327,7 +472,7 @@ fun Speed(modifier: Modifier) {
         ) {
             Box(
                 modifier = Modifier
-                    .background(cardColor)
+                    .background(primaryColor)
                     .align(Alignment.Center)
                     .padding(top = 10.dp)
             ) {
@@ -340,7 +485,7 @@ fun Speed(modifier: Modifier) {
             Text(
                 "Velocidad",
                 style = TextStyle(
-                    color = colorResource(id = R.color.text_primary),
+                    color = textPrimaryColor,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
@@ -369,10 +514,11 @@ fun Speed(modifier: Modifier) {
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = cardColor,
-                    unfocusedContainerColor = cardColor,
-                    focusedTextColor = colorResource(id = R.color.text_primary),
-                    unfocusedTextColor = colorResource(id = R.color.text_primary)
+                    focusedContainerColor = primaryColor,
+                    unfocusedContainerColor = primaryColor,
+                    focusedTextColor = textPrimaryColor,
+                    unfocusedTextColor = textPrimaryColor,
+                    unfocusedIndicatorColor = Color.Transparent
                 )
             )
             Slider(
@@ -384,7 +530,12 @@ fun Speed(modifier: Modifier) {
                 },
                 modifier = Modifier.padding(start = 24.dp, end = 24.dp),
                 valueRange = 0f..10f,
-                steps = 9
+                steps = 9,
+                colors = SliderDefaults.colors(
+                    thumbColor = thumbColor, //Color del circulo deslizable
+                    activeTrackColor = secondaryColor, //Color de la parte activa del Slider
+                    inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
+                )
             )
         }
     }
@@ -392,13 +543,17 @@ fun Speed(modifier: Modifier) {
 
 @Composable
 fun Resistance(modifier: Modifier) {
-    var myText by remember { mutableStateOf("0") }
+    var myText by remember { mutableStateOf("") }
     var sliderPosition by remember { mutableStateOf(0f) }
-    var cardColor = colorResource(id = R.color.success_color)
     Card(
         modifier
-            .fillMaxSize(),
-        colors = CardDefaults.cardColors(containerColor = cardColor)
+            .fillMaxSize()
+            .border(
+                width = 4.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(8.dp)
+            ),
+        colors = CardDefaults.cardColors(containerColor = primaryColor)
     ) {
         Box(
             modifier = Modifier
@@ -407,7 +562,7 @@ fun Resistance(modifier: Modifier) {
         ) {
             Box(
                 modifier = Modifier
-                    .background(cardColor)
+                    .background(primaryColor)
                     .align(Alignment.Center)
                     .padding(top = 10.dp)
             ) {
@@ -420,7 +575,7 @@ fun Resistance(modifier: Modifier) {
             Text(
                 "Resistencia",
                 style = TextStyle(
-                    color = colorResource(id = R.color.text_primary),
+                    color = textPrimaryColor,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
@@ -449,10 +604,11 @@ fun Resistance(modifier: Modifier) {
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = cardColor,
-                    unfocusedContainerColor = cardColor,
-                    focusedTextColor = colorResource(id = R.color.text_primary),
-                    unfocusedTextColor = colorResource(id = R.color.text_primary)
+                    focusedContainerColor = primaryColor,
+                    unfocusedContainerColor = primaryColor,
+                    focusedTextColor = textPrimaryColor,
+                    unfocusedTextColor = textPrimaryColor,
+                    unfocusedIndicatorColor = Color.Transparent
                 )
             )
             Slider(
@@ -464,7 +620,12 @@ fun Resistance(modifier: Modifier) {
                 },
                 modifier = Modifier.padding(start = 24.dp, end = 24.dp),
                 valueRange = 0f..10f,
-                steps = 9
+                steps = 9,
+                colors = SliderDefaults.colors(
+                    thumbColor = thumbColor, //Color del circulo deslizable
+                    activeTrackColor = secondaryColor, //Color de la parte activa del Slider
+                    inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
+                )
             )
         }
     }

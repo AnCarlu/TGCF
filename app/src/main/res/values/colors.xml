@@ -8,14 +8,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="primary_color">#4B5320</color>
-    <color name="secondary_color">#808080</color>
-    <color name="accent_color">#B22222</color>
-    <color name="background_color">#F5F5F5</color>
-    <color name="text_primary">#000000</color>
-    <color name="text_secondary">#333333</color>
-    <color name="success_color">#556B2F</color>
-    <color name="warning_color">#FFD700</color>
-    <color name="error_color">#8B0000</color>
 
 </resources>
