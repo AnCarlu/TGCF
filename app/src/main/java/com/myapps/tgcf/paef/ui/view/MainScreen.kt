@@ -20,7 +20,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -28,6 +27,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,9 +37,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -50,8 +47,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.drawable.IconCompat.IconType
 import com.myapps.tgcf.R
+import com.myapps.tgcf.paef.ui.viewmodel.TgcfViewModel
 import kotlin.math.roundToInt
 
 val primaryColor = Color(0xFF7689A9)
@@ -68,12 +65,23 @@ val accentColor = Color(0xFFFF4081)
 
 @Preview
 @Composable
-fun Screen() {
-    Column(Modifier.fillMaxSize()) {
+fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
+
+    val showApl: Boolean by tgfcViewModel.showApl.observeAsState(false)
+
+    Column(modifier.fillMaxSize()) {
         Result(
             Modifier
                 .weight(1f)
-                .padding(start = 8.dp, top = 16.dp, end = 8.dp, bottom = 4.dp)
+                .padding(start = 8.dp, top = 16.dp, end = 8.dp, bottom = 4.dp),
+            isAplChecked = showApl,
+            onAplCheckedChanged = { checked ->
+                if (checked) {
+                    tgfcViewModel.onShowApl()
+                } else {
+                    tgfcViewModel.onCoverUpDelte()
+                }
+            }
         )
         Row(
             Modifier
@@ -91,31 +99,34 @@ fun Screen() {
                     .padding(4.dp)
             )
         }
+
         Row(
             Modifier
                 .weight(1f)
                 .padding(4.dp),
         ) {
-            Speed(
-                Modifier
-                    .weight(1f)
-                    .padding(4.dp)
-            )
-            Resistance(
-                Modifier
-                    .weight(1f)
-                    .padding(4.dp)
-            )
+            if (!showApl) {
+                Speed(
+                    Modifier
+                        .weight(1f)
+                        .padding(4.dp)
+                )
+                Resistance(
+                    Modifier
+                        .weight(1f)
+                        .padding(4.dp)
+                )
+            }
         }
+
 
     }
 }
 
 @Composable
-fun Result(modifier: Modifier) {
+fun Result(modifier: Modifier, isAplChecked: Boolean, onAplCheckedChanged: (Boolean) -> Unit) {
     var resutl by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
-    var state by remember { mutableStateOf(false) }
     var showPlaceholder by remember { mutableStateOf(true) }
     var isManSelected by remember { mutableStateOf(false) }
 
@@ -145,16 +156,17 @@ fun Result(modifier: Modifier) {
                             modifier = Modifier
                                 .size(96.dp)
                                 .clickable { isManSelected = true }
-                                .alpha(if (isManSelected) 1f else 0.8 f),
-                            tint =  if(isManSelected) backIconColor else Color.Gray
+                                .alpha(if (isManSelected) 1f else 0.8f),
+                            tint = if (isManSelected) backIconColor else Color.Gray
                         )
                         Icon(
                             painter = painterResource(R.drawable.woman),
                             contentDescription = "Woman",
-                            modifier = Modifier.size(96.dp)
+                            modifier = Modifier
+                                .size(96.dp)
                                 .clickable { isManSelected = false }
                                 .alpha(if (isManSelected) 0.8f else 1f),
-                            tint =  if(!isManSelected) backIconColor else Color.Gray
+                            tint = if (!isManSelected) backIconColor else Color.Gray
                         )
                     }
                 }
@@ -215,7 +227,10 @@ fun Result(modifier: Modifier) {
                                 )
                             )
                             Spacer(Modifier.padding(8.dp))
-                            Checkbox(checked = state, onCheckedChange = { state = !state })
+                            Checkbox(
+                                checked = isAplChecked,
+                                onCheckedChange = onAplCheckedChanged
+                            )
                         }
                     }
                 }
