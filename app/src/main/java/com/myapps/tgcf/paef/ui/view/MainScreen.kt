@@ -91,7 +91,8 @@ fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
             Push(
                 Modifier
                     .weight(1f)
-                    .padding(4.dp)
+                    .padding(4.dp),
+                tgfcViewModel
             )
             Abs(
                 Modifier
@@ -286,8 +287,8 @@ fun Result(modifier: Modifier, isAplChecked: Boolean, onAplCheckedChanged: (Bool
 }
 
 @Composable
-fun Push(modifier: Modifier) {
-    var myText by remember { mutableStateOf("") }
+fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
+    var myText by remember { mutableStateOf(viewModel.pushCount.toString()) }
     var sliderPosition by remember { mutableStateOf(0f) }
     Card(
         modifier
@@ -340,6 +341,7 @@ fun Push(modifier: Modifier) {
                 value = myText,
                 onValueChange = { newValue ->
                     myText = newValue
+                    viewModel.pushCount= newValue.toIntOrNull() ?: 0
                     newValue.toIntOrNull()?.let { intValue ->
                         sliderPosition = intValue.toFloat()
                     }
