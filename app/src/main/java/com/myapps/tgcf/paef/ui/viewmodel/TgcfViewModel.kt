@@ -11,30 +11,64 @@ import javax.inject.Inject
 
 class TgcfViewModel @Inject constructor() : ViewModel() {
 
-    var ageInput by mutableStateOf(0)
+
+    var isMale by mutableStateOf(true) //Estado para controlar el sexo marcado
+    var showAgeDialog by mutableStateOf(true) //Estado para controlar la visibilidad del Dialogo Edad
+    private set
     var pushCount by mutableStateOf(0)
     var absCount by mutableStateOf(0)
     var speedTime by mutableStateOf(0.0)
     var runTime by mutableStateOf(0)
+    var pushUpRange by mutableStateOf(0 to 0)
+    var absRange by mutableStateOf(0 to 0)
+    var _ageInput by mutableStateOf(0)
+    var ageInput: Int
+        get() = _ageInput
+        set(value) {
+            _ageInput=value
+            calculateFinalScore()
+        }
 
-    private var ageGroup = 1
-    private var isMale = true
-    private var pushScore = 0
-    private var absScore = 0
-    private var speedScore = 0
-    private var runScore = 0
+    private var ageGroup = 0
 
     //Livedata para mostrar u ocultar las celdas en caso de que esté marcado APL
     private val _showApl = MutableLiveData<Boolean>()
     val showApl: LiveData<Boolean> = _showApl
 
-
     fun onShowApl() {
         _showApl.value = true
     }
 
-    fun onCoverUpDelte() {
+    fun onCoverUpApl() {
         _showApl.value = false
+    }
+
+    //Estado temporal para el Slider de Edad
+    private var _ageDialog by mutableStateOf(0)
+    val ageDialog: Int get()=_ageDialog
+
+    //Funcion para mostrar el Dialog de Edad
+    fun openAgeDialog() {
+        showAgeDialog=true
+        _ageDialog= if (ageInput in 17..61) ageInput else 17
+
+    }
+
+    //Funcion para cerrar el Dialog de Edad
+    fun closeAgeDialog(){
+        showAgeDialog=false
+    }
+
+    //Funcion para confirmar la seleccion de Edad
+    fun confirmAgeSelect(){
+        ageInput=_ageDialog
+        calculateFinalScore()
+        closeAgeDialog()
+    }
+
+    //Funcion para actualizar el valor del Slider de Edad
+    fun updateAgeTemplete(value:Float){
+        _ageDialog= value.toInt()
     }
 
     fun calculateFinalScore() {
@@ -50,9 +84,12 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
             in 57..61 -> 9
             else -> 10
         }
+        updateAllRanges()
+    }
 
-        pushScore=ScoreTables.getPushScore(ageGroup, isMale, pushCount)
-        absScore=ScoreTables.getAbsScore(ageGroup, isMale, absCount)
+    fun updateAllRanges() {
+        pushUpRange = ScoreTables.getPushUpRange(ageGroup, isMale)
+        absRange = ScoreTables.getAbsRange(ageGroup, isMale)
     }
 
 

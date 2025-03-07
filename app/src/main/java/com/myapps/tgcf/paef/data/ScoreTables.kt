@@ -4744,32 +4744,31 @@ object ScoreTables {
         )
     }
 
-    //Funcion generica para buscar las puntuaciones
-    private fun <T : Comparable<T>> getScore(
-        table: Map<Int, Map<String, SortedMap<T, Int>>>,
-        ageGroup: Int,
-        isMale: Boolean,
-        value: T
-    ): Int {
-        val genderKey = if (isMale) "M" else "F"
-        return table[ageGroup]?.get(gender)?.let { scoreMap ->
-            scoreMap.floorEntry(value)?.value ?: 0
-        }
+    /*
+    Funcion que obtiene el rango específico de los valores
+    basado en el grupo de edad y en el genero
+     */
+    fun getTestRange(
+        table: Map<Int, Map<String, SortedMap<Int, Int>>>, //tabla a la accede
+        ageGroup: Int, //grudo de edad
+        isMale: Boolean //genero
+    ): Pair<Int, Int> {
+        val gender = if (isMale) "M" else "F"
+        /*
+        Busca en la tabla el correspondiente grupo de edad
+        y dentro de esto obtiene el sortedMap asociado al genero
+         */
+        return table[ageGroup]?.get(gender)
+            ?.let {  //obtiene el rango minimo y maximo
+                /*
+                Si existen datos devuelve el primer y ultimo key del SortedMap,
+                en caso contrario devuelve 0
+                 */
+                if (it.isNotEmpty()) Pair(it.firstKey(), it.lastKey()) else Pair(0, 0)
+            } ?: Pair(0, 0)
     }
 
-    fun getPushScore(ageGroup: Int, isMale: Boolean, reps: Int): Int {
-        return getScore(pushUps, ageGroup, isMale, reps)
-    }
+    fun getPushUpRange(ageGroup: Int, isMale: Boolean) = getTestRange(pushUps, ageGroup, isMale)
+    fun getAbsRange(ageGroup: Int, isMale: Boolean) = getTestRange(abs, ageGroup, isMale)
 
-    fun getAbsScore(ageGroup: Int, isMale: Boolean, reps: Int): Int {
-        return getScore(abs, ageGroup, isMale, reps)
-    }
-
-    fun getspeedScore(ageGroup: Int, isMale: Boolean, time: Double): Int {
-        return getScore(speed, ageGroup, isMale, time)
-    }
-
-    fun getrunScore(ageGroup: Int, isMale: Boolean, time :Int): Int{
-        return getScore(run, ageGroup, isMale, time)
-    }
 }

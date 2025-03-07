@@ -67,19 +67,25 @@ val accentColor = Color(0xFFFF4081)
 @Composable
 fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
 
+    /*
+    Variable para mostrar o no las card de velocidad y Carrera según si está apl marcado o no
+     */
     val showApl: Boolean by tgfcViewModel.showApl.observeAsState(false)
 
     Column(modifier.fillMaxSize()) {
+        //Card del Sexo, Edad y el resultado de la nota
         Result(
             Modifier
                 .weight(1f)
                 .padding(start = 8.dp, top = 16.dp, end = 8.dp, bottom = 4.dp),
+            tgfcViewModel,
             isAplChecked = showApl,
             onAplCheckedChanged = { checked ->
+                //Si APL se marca, se ocultan las cards de Carrera y Velocidad
                 if (checked) {
                     tgfcViewModel.onShowApl()
                 } else {
-                    tgfcViewModel.onCoverUpDelte()
+                    tgfcViewModel.onCoverUpApl()
                 }
             }
         )
@@ -88,12 +94,14 @@ fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
                 .weight(1f)
                 .padding(4.dp)
         ) {
+            //Card de flexiones
             Push(
                 Modifier
                     .weight(1f)
                     .padding(4.dp),
                 tgfcViewModel
             )
+            //Card de abdominales
             Abs(
                 Modifier
                     .weight(1f)
@@ -107,11 +115,13 @@ fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
                 .padding(4.dp),
         ) {
             if (!showApl) {
+                //Card de velocidad
                 Speed(
                     Modifier
                         .weight(1f)
                         .padding(4.dp)
                 )
+                //Card de carrera
                 Resistance(
                     Modifier
                         .weight(1f)
@@ -125,12 +135,23 @@ fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
 }
 
 @Composable
-fun Result(modifier: Modifier, isAplChecked: Boolean, onAplCheckedChanged: (Boolean) -> Unit) {
+fun Result(
+    modifier: Modifier,
+    viewModel: TgcfViewModel,
+    isAplChecked: Boolean,
+    onAplCheckedChanged: (Boolean) -> Unit
+) {
     var resutl by remember { mutableStateOf("") }
-    var age by remember { mutableStateOf("") }
-    var showPlaceholder by remember { mutableStateOf(true) }
-    var isManSelected by remember { mutableStateOf(false) }
+    var showPlaceholder by remember { mutableStateOf(true) } //Variable para mostrar la palabra "Edad" si la edad está vacia
+    var isManSelected by remember { mutableStateOf(true) } //Variable para cambiar el color del sexo
 
+    //Diaogo para elegir la edad
+    AgeDialog(
+        show = viewModel.showAgeDialog,
+        onDismiss = { viewModel.closeAgeDialog() },
+        age = viewModel.ageDialog,
+        onConfirm = { viewModel.confirmAgeSelect() },
+        onAgeChanged = {viewModel.updateAgeTemplete(it)})
     Card(
         modifier
             .fillMaxWidth()
@@ -150,22 +171,31 @@ fun Result(modifier: Modifier, isAplChecked: Boolean, onAplCheckedChanged: (Bool
             ) {
                 Box(modifier = Modifier.padding(top = 16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-
+                        //Icono Hombre
                         Icon(
                             painter = painterResource(R.drawable.man),
                             contentDescription = "Man",
                             modifier = Modifier
                                 .size(96.dp)
-                                .clickable { isManSelected = true }
+                                .clickable {
+                                    isManSelected = true
+                                    viewModel.isMale = true
+                                    viewModel.updateAllRanges()
+                                }
                                 .alpha(if (isManSelected) 1f else 0.8f),
                             tint = if (isManSelected) backIconColor else Color.Gray
                         )
+                        //Icono Mujer
                         Icon(
                             painter = painterResource(R.drawable.woman),
                             contentDescription = "Woman",
                             modifier = Modifier
                                 .size(96.dp)
-                                .clickable { isManSelected = false }
+                                .clickable {
+                                    isManSelected = false
+                                    viewModel.isMale = false
+                                    viewModel.updateAllRanges()
+                                }
                                 .alpha(if (isManSelected) 0.8f else 1f),
                             tint = if (!isManSelected) backIconColor else Color.Gray
                         )
@@ -180,9 +210,10 @@ fun Result(modifier: Modifier, isAplChecked: Boolean, onAplCheckedChanged: (Bool
                     Column(modifier.fillMaxWidth()) {
 
                         TextField(
-                            value = age,
-                            onValueChange = { age = it },
+                            value = if (viewModel.ageInput == 0) "" else viewModel.ageInput.toString(),
+                            onValueChange = {},
                             placeholder = {
+                                //Si no se ha añadido aun la edad se muestra la palabra edad
                                 if (showPlaceholder) {
                                     Text(
                                         "Edad",
@@ -196,14 +227,18 @@ fun Result(modifier: Modifier, isAplChecked: Boolean, onAplCheckedChanged: (Bool
                                 }
                             },
                             modifier = Modifier
+                                .clickable {
+                                    viewModel.openAgeDialog() //Abre el Dialogo de edad al pulsar
+                                }
                                 .onFocusChanged {
                                     if (it.isFocused) {
                                         showPlaceholder = false
                                     }
                                 }
-                                .size(72.dp),
-                            singleLine = true,
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                .size(width = 100.dp, height = 60.dp),
+                            readOnly = true,
+                            //singleLine = true,
+                            //keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             colors = TextFieldDefaults.colors(
                                 focusedContainerColor = primaryColor,
                                 unfocusedContainerColor = primaryColor,
@@ -228,6 +263,7 @@ fun Result(modifier: Modifier, isAplChecked: Boolean, onAplCheckedChanged: (Bool
                                 )
                             )
                             Spacer(Modifier.padding(8.dp))
+                            //CheckBox para marcar si es APL
                             Checkbox(
                                 checked = isAplChecked,
                                 onCheckedChange = onAplCheckedChanged
@@ -282,14 +318,15 @@ fun Result(modifier: Modifier, isAplChecked: Boolean, onAplCheckedChanged: (Bool
         }
 
     }
-
-
 }
 
+
+//Funcion para controlar la Card de las flexiones
 @Composable
 fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
-    var myText by remember { mutableStateOf(viewModel.pushCount.toString()) }
-    var sliderPosition by remember { mutableStateOf(0f) }
+    val range = viewModel.pushUpRange  //Rando de las flexiones
+    var myText by remember { mutableStateOf(viewModel.pushCount.toString()) } //Variable que recoge el numero del TextField
+    var sliderPosition by remember { mutableStateOf(range.first.toFloat()) } //Posicion del Slider
     Card(
         modifier
             .fillMaxSize()
@@ -305,13 +342,14 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
+            //Box para colocar la Imagen y el Text con el nombre de la Card
             Box(
                 modifier = Modifier
                     .background(primaryColor)
                     .align(Alignment.Center)
                     .padding(top = 10.dp)
             ) {
-
+                //Imagen del deporte de la Card
                 Image(
                     painter = painterResource(id = R.drawable.push_up),
                     contentDescription = "push up"
@@ -327,7 +365,6 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
                     textAlign = TextAlign.Center
                 ),
                 modifier = Modifier.align(Alignment.TopCenter)
-
             )
         }
         Column(
@@ -337,11 +374,14 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            /*
+
+             */
             TextField(
-                value = myText,
+                value = sliderPosition.toInt().toString(),
                 onValueChange = { newValue ->
-                    myText = newValue
-                    viewModel.pushCount= newValue.toIntOrNull() ?: 0
+                    sliderPosition = newValue.toFloat()
+                    viewModel.pushCount = newValue.toIntOrNull() ?: 0
                     newValue.toIntOrNull()?.let { intValue ->
                         sliderPosition = intValue.toFloat()
                     }
@@ -364,9 +404,9 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
                     sliderPosition = rounValue
                     myText = newValue.toInt().toString()
                 },
+                valueRange = range.first.toFloat()..range.second.toFloat(),
+                steps = range.second - range.first,
                 modifier = Modifier.padding(start = 24.dp, end = 24.dp),
-                valueRange = 0f..10f,
-                steps = 9,
                 colors = SliderDefaults.colors(
                     thumbColor = thumbColor, //Color del circulo deslizable
                     activeTrackColor = secondaryColor, //Color de la parte activa del Slider
