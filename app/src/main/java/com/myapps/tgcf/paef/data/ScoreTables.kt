@@ -4770,5 +4770,7 @@ object ScoreTables {
 
     fun getPushUpRange(ageGroup: Int, isMale: Boolean) = getTestRange(pushUps, ageGroup, isMale)
     fun getAbsRange(ageGroup: Int, isMale: Boolean) = getTestRange(abs, ageGroup, isMale)
+    fun getSpeddRange(ageGroup: Int, isMale: Boolean) = getTestRange(speed, ageGroup, isMale)
+    fun getRunRange(ageGroup: Int, isMale: Boolean) = getTestRange(run, ageGroup, isMale)
 
 }

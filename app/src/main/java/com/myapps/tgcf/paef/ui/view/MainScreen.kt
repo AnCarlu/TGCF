@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.myapps.tgcf.R
 import com.myapps.tgcf.paef.ui.viewmodel.TgcfViewModel
 import kotlin.math.roundToInt
@@ -60,6 +61,7 @@ val textPrimaryColor = Color(0xFF000000)
 val thumbColor = Color(0xFFAA9539)
 val successColor = Color(0xFF4CAF50)
 val warningColor = Color(0xFFFFC107)
+val cancelColor = Color(0xFFEF5350)
 val errorColor = Color(0xFFFF5252)
 val accentColor = Color(0xFFFF4081)
 
@@ -87,8 +89,7 @@ fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
                 } else {
                     tgfcViewModel.onCoverUpApl()
                 }
-            }
-        )
+            })
         Row(
             Modifier
                 .weight(1f)
@@ -98,14 +99,13 @@ fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
             Push(
                 Modifier
                     .weight(1f)
-                    .padding(4.dp),
-                tgfcViewModel
+                    .padding(4.dp), tgfcViewModel
             )
             //Card de abdominales
             Abs(
                 Modifier
                     .weight(1f)
-                    .padding(4.dp)
+                    .padding(4.dp), tgfcViewModel
             )
         }
 
@@ -119,7 +119,7 @@ fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
                 Speed(
                     Modifier
                         .weight(1f)
-                        .padding(4.dp)
+                        .padding(4.dp), tgfcViewModel
                 )
                 //Card de carrera
                 Resistance(
@@ -142,26 +142,16 @@ fun Result(
     onAplCheckedChanged: (Boolean) -> Unit
 ) {
     var resutl by remember { mutableStateOf("") }
-    var showPlaceholder by remember { mutableStateOf(true) } //Variable para mostrar la palabra "Edad" si la edad está vacia
     var isManSelected by remember { mutableStateOf(true) } //Variable para cambiar el color del sexo
 
-    //Diaogo para elegir la edad
-    AgeDialog(
-        show = viewModel.showAgeDialog,
-        onDismiss = { viewModel.closeAgeDialog() },
-        age = viewModel.ageDialog,
-        onConfirm = { viewModel.confirmAgeSelect() },
-        onAgeChanged = {viewModel.updateAgeTemplete(it)})
+
     Card(
         modifier
             .fillMaxWidth()
             .shadow(4.dp, shape = RoundedCornerShape(8.dp))
             .border(
-                width = 4.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(8.dp)
-            ),
-        colors = CardDefaults.cardColors(containerColor = primaryColor)
+                width = 4.dp, color = borderColor, shape = RoundedCornerShape(8.dp)
+            ), colors = CardDefaults.cardColors(containerColor = primaryColor)
     ) {
         Row {
             Box(
@@ -172,8 +162,7 @@ fun Result(
                 Box(modifier = Modifier.padding(top = 16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         //Icono Hombre
-                        Icon(
-                            painter = painterResource(R.drawable.man),
+                        Icon(painter = painterResource(R.drawable.man),
                             contentDescription = "Man",
                             modifier = Modifier
                                 .size(96.dp)
@@ -183,11 +172,9 @@ fun Result(
                                     viewModel.updateAllRanges()
                                 }
                                 .alpha(if (isManSelected) 1f else 0.8f),
-                            tint = if (isManSelected) backIconColor else Color.Gray
-                        )
+                            tint = if (isManSelected) backIconColor else Color.Gray)
                         //Icono Mujer
-                        Icon(
-                            painter = painterResource(R.drawable.woman),
+                        Icon(painter = painterResource(R.drawable.woman),
                             contentDescription = "Woman",
                             modifier = Modifier
                                 .size(96.dp)
@@ -197,8 +184,7 @@ fun Result(
                                     viewModel.updateAllRanges()
                                 }
                                 .alpha(if (isManSelected) 0.8f else 1f),
-                            tint = if (!isManSelected) backIconColor else Color.Gray
-                        )
+                            tint = if (!isManSelected) backIconColor else Color.Gray)
                     }
                 }
 
@@ -209,53 +195,14 @@ fun Result(
                 ) {
                     Column(modifier.fillMaxWidth()) {
 
-                        TextField(
-                            value = if (viewModel.ageInput == 0) "" else viewModel.ageInput.toString(),
-                            onValueChange = {},
-                            placeholder = {
-                                //Si no se ha añadido aun la edad se muestra la palabra edad
-                                if (showPlaceholder) {
-                                    Text(
-                                        "Edad",
-                                        style = TextStyle(
-                                            fontStyle = FontStyle.Italic,
-                                            fontSize = 16.sp,
-                                            fontFamily = FontFamily.SansSerif,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    )
-                                }
-                            },
-                            modifier = Modifier
-                                .clickable {
-                                    viewModel.openAgeDialog() //Abre el Dialogo de edad al pulsar
-                                }
-                                .onFocusChanged {
-                                    if (it.isFocused) {
-                                        showPlaceholder = false
-                                    }
-                                }
-                                .size(width = 100.dp, height = 60.dp),
-                            readOnly = true,
-                            //singleLine = true,
-                            //keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = primaryColor,
-                                unfocusedContainerColor = primaryColor,
-                                focusedTextColor = textPrimaryColor,
-                                unfocusedTextColor = textPrimaryColor,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent
-                            )
-                        )
+                        Age(viewModel)
 
                         Spacer(Modifier.padding(8.dp))
 
                         Row(verticalAlignment = Alignment.CenterVertically) {
 
                             Text(
-                                "APL",
-                                style = TextStyle(
+                                "APL", style = TextStyle(
                                     color = textPrimaryColor,
                                     fontSize = 16.sp,
                                     fontStyle = FontStyle.Italic,
@@ -265,8 +212,7 @@ fun Result(
                             Spacer(Modifier.padding(8.dp))
                             //CheckBox para marcar si es APL
                             Checkbox(
-                                checked = isAplChecked,
-                                onCheckedChange = onAplCheckedChanged
+                                checked = isAplChecked, onCheckedChange = onAplCheckedChanged
                             )
                         }
                     }
@@ -321,21 +267,65 @@ fun Result(
 }
 
 
+@Composable
+fun Age(viewModel: TgcfViewModel) {
+    var showPlaceholder by remember { mutableStateOf(true) } //Estado para mostrar la palabra "Edad" si la edad está vacia
+
+
+    TextField(value = if (viewModel.ageInput == 0) "" else viewModel.ageInput.toString(),
+        onValueChange = {},
+        placeholder = {
+            //Si no se ha añadido aun la edad se muestra la palabra edad
+            if (showPlaceholder) {
+                Text(
+                    "Edad", style = TextStyle(
+                        fontStyle = FontStyle.Italic,
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily.SansSerif,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+        },
+        modifier = Modifier
+            .clickable { viewModel.openAgeDialog() }
+            .onFocusChanged {
+                if (it.isFocused) {
+                    showPlaceholder = false
+                }
+            }
+            .size(width = 70.dp, height = 50.dp),
+        readOnly = true,
+        enabled = false,
+        colors = TextFieldDefaults.colors(
+            disabledContainerColor = primaryColor,
+            disabledTextColor = textPrimaryColor,
+            disabledIndicatorColor = Color.Transparent
+        ))
+
+    if (viewModel.showAgeDialog) {
+        AgeDialog(
+            onDismiss = { viewModel.closeAgeDialog() },
+            age = viewModel.ageDialog,
+            onConfirm = { viewModel.confirmAgeSelect() },
+            onAgeChanged = { viewModel.updateAgeTemplete(it) })
+    }
+}
+
+
 //Funcion para controlar la Card de las flexiones
 @Composable
 fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
     val range = viewModel.pushUpRange  //Rando de las flexiones
-    var myText by remember { mutableStateOf(viewModel.pushCount.toString()) } //Variable que recoge el numero del TextField
+    var myText by remember { mutableStateOf(viewModel.pushCount.toString()) } //Estado que recoge el numero del TextField
     var sliderPosition by remember { mutableStateOf(range.first.toFloat()) } //Posicion del Slider
     Card(
         modifier
             .fillMaxSize()
             .border(
-                width = 4.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(10.dp)
-            ),
-        colors = CardDefaults.cardColors(containerColor = primaryColor)
+                width = 4.dp, color = borderColor, shape = RoundedCornerShape(16.dp)
+            ), colors = CardDefaults.cardColors(containerColor = primaryColor),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Box(
             modifier = Modifier
@@ -356,15 +346,13 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
                 )
             }
             Text(
-                "Flexiones",
-                style = TextStyle(
+                "Flexiones", style = TextStyle(
                     color = textPrimaryColor,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
                     textAlign = TextAlign.Center
-                ),
-                modifier = Modifier.align(Alignment.TopCenter)
+                ), modifier = Modifier.align(Alignment.TopCenter)
             )
         }
         Column(
@@ -418,19 +406,19 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
 }
 
 @Composable
-fun Abs(modifier: Modifier) {
-    var myText by remember { mutableStateOf("") }
-    var sliderPosition by remember { mutableStateOf(0f) }
+fun Abs(modifier: Modifier, viewModel: TgcfViewModel) {
+    val range = viewModel.absRange //Rango de los abdominales
+    var myText by remember { mutableStateOf(viewModel.absCount.toString()) }
+    var sliderPosition by remember { mutableStateOf(range.first.toFloat()) }
 
     Card(
         modifier
             .fillMaxSize()
             .border(
-                width = 4.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(8.dp)
+                width = 4.dp, color = borderColor, shape = RoundedCornerShape(16.dp)
             ),
-        colors = CardDefaults.cardColors(containerColor = primaryColor)
+        colors = CardDefaults.cardColors(containerColor = primaryColor),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Box(
             modifier = Modifier
@@ -445,20 +433,17 @@ fun Abs(modifier: Modifier) {
             ) {
 
                 Image(
-                    painter = painterResource(id = R.drawable.abs),
-                    contentDescription = "push up"
+                    painter = painterResource(id = R.drawable.abs), contentDescription = "push up"
                 )
             }
             Text(
-                "Abdominales",
-                style = TextStyle(
+                "Abdominales", style = TextStyle(
                     color = textPrimaryColor,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
                     textAlign = TextAlign.Center
-                ),
-                modifier = Modifier.align(Alignment.TopCenter)
+                ), modifier = Modifier.align(Alignment.TopCenter)
 
             )
         }
@@ -470,9 +455,10 @@ fun Abs(modifier: Modifier) {
             verticalArrangement = Arrangement.Center
         ) {
             TextField(
-                value = myText,
+                value = sliderPosition.toInt().toString(),
                 onValueChange = { newValue ->
-                    myText = newValue
+                    sliderPosition = newValue.toFloat()
+                    viewModel.absCount = newValue.toIntOrNull() ?: 0
                     newValue.toIntOrNull()?.let { intValue ->
                         sliderPosition = intValue.toFloat()
                     }
@@ -495,9 +481,9 @@ fun Abs(modifier: Modifier) {
                     sliderPosition = rounValue
                     myText = newValue.toInt().toString()
                 },
+                valueRange = range.first.toFloat()..range.second.toFloat(),
+                steps = range.second - range.first,
                 modifier = Modifier.padding(start = 24.dp, end = 24.dp),
-                valueRange = 0f..10f,
-                steps = 9,
                 colors = SliderDefaults.colors(
                     thumbColor = thumbColor, //Color del circulo deslizable
                     activeTrackColor = secondaryColor, //Color de la parte activa del Slider
@@ -509,18 +495,18 @@ fun Abs(modifier: Modifier) {
 }
 
 @Composable
-fun Speed(modifier: Modifier) {
-    var myText by remember { mutableStateOf("") }
-    var sliderPosition by remember { mutableStateOf(0f) }
+fun Speed(modifier: Modifier, viewModel: TgcfViewModel) {
+    var range = viewModel.speedRange//Rango de las velocidades
+    var myText by remember { mutableStateOf(viewModel.speedTime.toString()) }
+    var sliderPosition by remember { mutableStateOf(range.first.toFloat()) }
     Card(
         modifier
             .fillMaxSize()
             .border(
-                width = 4.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(8.dp)
+                width = 4.dp, color = borderColor, shape = RoundedCornerShape(16.dp)
             ),
-        colors = CardDefaults.cardColors(containerColor = primaryColor)
+        colors = CardDefaults.cardColors(containerColor = primaryColor),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Box(
             modifier = Modifier
@@ -535,20 +521,17 @@ fun Speed(modifier: Modifier) {
             ) {
 
                 Image(
-                    painter = painterResource(id = R.drawable.speed),
-                    contentDescription = "push up"
+                    painter = painterResource(id = R.drawable.speed), contentDescription = "push up"
                 )
             }
             Text(
-                "Velocidad",
-                style = TextStyle(
+                "Velocidad", style = TextStyle(
                     color = textPrimaryColor,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
                     textAlign = TextAlign.Center
-                ),
-                modifier = Modifier.align(Alignment.TopCenter)
+                ), modifier = Modifier.align(Alignment.TopCenter)
 
             )
         }
@@ -560,9 +543,10 @@ fun Speed(modifier: Modifier) {
             verticalArrangement = Arrangement.Center
         ) {
             TextField(
-                value = myText,
+                value = sliderPosition.toInt().toString(),
                 onValueChange = { newValue ->
-                    myText = newValue
+                    sliderPosition = newValue.toFloat()
+                    viewModel.speedTime= newValue.toIntOrNull() ?: 0
                     newValue.toIntOrNull()?.let { intValue ->
                         sliderPosition = intValue.toFloat()
                     }
@@ -585,15 +569,33 @@ fun Speed(modifier: Modifier) {
                     sliderPosition = rounValue
                     myText = newValue.toInt().toString()
                 },
+                valueRange = range.first.toFloat()..range.second.toFloat(),
+                steps = range.second - range.first,
                 modifier = Modifier.padding(start = 24.dp, end = 24.dp),
-                valueRange = 0f..10f,
-                steps = 9,
                 colors = SliderDefaults.colors(
                     thumbColor = thumbColor, //Color del circulo deslizable
                     activeTrackColor = secondaryColor, //Color de la parte activa del Slider
                     inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
                 )
             )
+
+            Slider(
+                value = sliderPosition,
+                onValueChange = { newValue ->
+                    val rounValue = newValue.roundToInt().toFloat()
+                    sliderPosition = rounValue
+                    myText = newValue.toInt().toString()
+                },
+                valueRange = range.first.toFloat()..range.second.toFloat(),
+                steps = range.second - range.first,
+                modifier = Modifier.padding(start = 24.dp, end = 24.dp),
+                colors = SliderDefaults.colors(
+                    thumbColor = thumbColor, //Color del circulo deslizable
+                    activeTrackColor = secondaryColor, //Color de la parte activa del Slider
+                    inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
+                )
+            )
+
         }
     }
 }
@@ -606,11 +608,10 @@ fun Resistance(modifier: Modifier) {
         modifier
             .fillMaxSize()
             .border(
-                width = 4.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(8.dp)
+                width = 4.dp, color = borderColor, shape = RoundedCornerShape(16.dp)
             ),
-        colors = CardDefaults.cardColors(containerColor = primaryColor)
+        colors = CardDefaults.cardColors(containerColor = primaryColor),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Box(
             modifier = Modifier
@@ -630,15 +631,13 @@ fun Resistance(modifier: Modifier) {
                 )
             }
             Text(
-                "Resistencia",
-                style = TextStyle(
+                "Resistencia", style = TextStyle(
                     color = textPrimaryColor,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Serif,
                     textAlign = TextAlign.Center
-                ),
-                modifier = Modifier.align(Alignment.TopCenter)
+                ), modifier = Modifier.align(Alignment.TopCenter)
 
             )
         }

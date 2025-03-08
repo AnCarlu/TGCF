@@ -15,7 +15,9 @@ import com.myapps.tgcf.paef.ui.view.Screen
 import com.myapps.tgcf.paef.ui.viewmodel.TgcfViewModel
 import com.myapps.tgcf.ui.theme.TgcfTheme
 
+
 val backgroundColor = Color(0xFFFFFFFF)
+
 class MainActivity : ComponentActivity() {
 
     private val taskViewModel: TgcfViewModel by viewModels()
