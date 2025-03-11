@@ -1,5 +1,6 @@
 package com.myapps.tgcf.paef.ui.view
 
+import android.media.Image
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,6 +38,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -65,7 +68,7 @@ val cancelColor = Color(0xFFEF5350)
 val errorColor = Color(0xFFFF5252)
 val accentColor = Color(0xFFFF4081)
 
-@Preview
+//@Preview
 @Composable
 fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
 
@@ -93,39 +96,41 @@ fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
         Row(
             Modifier
                 .weight(1f)
-                .padding(4.dp)
+                .padding(2.dp)
         ) {
             //Card de flexiones
             Push(
                 Modifier
                     .weight(1f)
-                    .padding(4.dp), tgfcViewModel
+                    .padding(2.dp), tgfcViewModel
             )
             //Card de abdominales
             Abs(
                 Modifier
                     .weight(1f)
-                    .padding(4.dp), tgfcViewModel
+                    .padding(2.dp), tgfcViewModel
             )
         }
 
         Row(
             Modifier
                 .weight(1f)
-                .padding(4.dp),
+                .padding(2.dp),
         ) {
             if (!showApl) {
                 //Card de velocidad
                 Speed(
                     Modifier
                         .weight(1f)
-                        .padding(4.dp), tgfcViewModel
+                        .padding(2.dp),
+                    tgfcViewModel
                 )
                 //Card de carrera
                 Resistance(
                     Modifier
                         .weight(1f)
-                        .padding(4.dp)
+                        .padding(2.dp),
+                    tgfcViewModel
                 )
             }
         }
@@ -312,13 +317,18 @@ fun Age(viewModel: TgcfViewModel) {
     }
 }
 
-
-//Funcion para controlar la Card de las flexiones
 @Composable
-fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
-    val range = viewModel.pushUpRange  //Rando de las flexiones
-    var myText by remember { mutableStateOf(viewModel.pushCount.toString()) } //Estado que recoge el numero del TextField
-    var sliderPosition by remember { mutableStateOf(range.first.toFloat()) } //Posicion del Slider
+fun ExerciseCard(
+    modifier: Modifier,
+    viewModel: TgcfViewModel,
+    title: String,
+    image: Int,
+    range: Pair<Int, Int>,
+    currentValue: Int,
+    onValueChange: (Int) -> Unit
+) {
+    var myText by remember { mutableStateOf(currentValue.toString()) }
+    var sliderPosition by remember { mutableStateOf(range.first.toFloat()) }
     Card(
         modifier
             .fillMaxSize()
@@ -327,364 +337,165 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
             ), colors = CardDefaults.cardColors(containerColor = primaryColor),
         shape = RoundedCornerShape(16.dp)
     ) {
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
+                .padding(4.dp)
         ) {
-            //Box para colocar la Imagen y el Text con el nombre de la Card
-            Box(
+            // Imagen de fondo
+            Image(
+                painter = painterResource(id = image),
+                contentDescription = "background image",
                 modifier = Modifier
-                    .background(primaryColor)
-                    .align(Alignment.Center)
-                    .padding(top = 10.dp)
+                    .fillMaxSize()
+                    .alpha(0.25f),  // Ajusta transparencia
+                contentScale = ContentScale.FillBounds
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                //Imagen del deporte de la Card
-                Image(
-                    painter = painterResource(id = R.drawable.push_up),
-                    contentDescription = "push up"
+                Text(
+                    title, style = TextStyle(
+                        color = textPrimaryColor,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Serif,
+                        textAlign = TextAlign.Center
+                    ), modifier = Modifier.padding(top = 8.dp)
                 )
-            }
-            Text(
-                "Flexiones", style = TextStyle(
-                    color = textPrimaryColor,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Serif,
-                    textAlign = TextAlign.Center
-                ), modifier = Modifier.align(Alignment.TopCenter)
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            /*
 
-             */
-            TextField(
-                value = sliderPosition.toInt().toString(),
-                onValueChange = { newValue ->
-                    sliderPosition = newValue.toFloat()
-                    viewModel.pushCount = newValue.toIntOrNull() ?: 0
-                    newValue.toIntOrNull()?.let { intValue ->
-                        sliderPosition = intValue.toFloat()
-                    }
-                },
-                modifier = Modifier.size(55.dp),
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = primaryColor,
-                    unfocusedContainerColor = primaryColor,
-                    focusedTextColor = textPrimaryColor,
-                    unfocusedTextColor = textPrimaryColor,
-                    unfocusedIndicatorColor = Color.Transparent
-                )
-            )
-            Slider(
-                value = sliderPosition,
-                onValueChange = { newValue ->
-                    val rounValue = newValue.roundToInt().toFloat()
-                    sliderPosition = rounValue
-                    myText = newValue.toInt().toString()
-                },
-                valueRange = range.first.toFloat()..range.second.toFloat(),
-                steps = range.second - range.first,
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp),
-                colors = SliderDefaults.colors(
-                    thumbColor = thumbColor, //Color del circulo deslizable
-                    activeTrackColor = secondaryColor, //Color de la parte activa del Slider
-                    inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
-                )
-            )
+                // Controles interactivos
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+
+                    TextField(
+                        value = "Puntos: " + sliderPosition.toInt().toString(),
+                        onValueChange = { newValue ->
+                            sliderPosition = newValue.toFloat()
+                            viewModel.pushCount = newValue.toIntOrNull() ?: 0
+                            newValue.toIntOrNull()?.let { intValue ->
+                                sliderPosition = intValue.toFloat()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 1,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = primaryColor.copy(alpha = 0.01f),
+                            unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
+                            focusedTextColor = textPrimaryColor,
+                            unfocusedTextColor = textPrimaryColor,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
+                    )
+
+                    Spacer(Modifier.size(16.dp))
+                    TextField(
+                        value = "Repeticiones: " + sliderPosition.toInt().toString(),
+                        onValueChange = { newValue ->
+                            sliderPosition = newValue.toFloat()
+                            viewModel.pushCount = newValue.toIntOrNull() ?: 0
+                            newValue.toIntOrNull()?.let { intValue ->
+                                sliderPosition = intValue.toFloat()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 1,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = primaryColor.copy(alpha = 0.01f),
+                            unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
+                            focusedTextColor = textPrimaryColor,
+                            unfocusedTextColor = textPrimaryColor,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
+                    )
+
+                    Slider(
+                        value = sliderPosition,
+                        onValueChange = { newValue ->
+                            val rounValue = newValue.roundToInt().toFloat()
+                            sliderPosition = rounValue
+                            myText = newValue.toInt().toString()
+                            onValueChange(newValue.toInt())
+                        },
+                        valueRange = range.first.toFloat()..range.second.toFloat(),
+                        steps = range.second - range.first,
+                        modifier = Modifier.padding(start = 24.dp, end = 24.dp),
+                        colors = SliderDefaults.colors(
+                            thumbColor = thumbColor, //Color del circulo deslizable
+                            activeTrackColor = secondaryColor, //Color de la parte activa del Slider
+                            inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
+                        )
+                    )
+                }
+            }
         }
     }
+}
+
+//Funcion para controlar la Card de las flexiones
+@Composable
+fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
+    ExerciseCard(
+        modifier = modifier,
+        viewModel = viewModel,
+        title = "Flexiones",
+        image = R.drawable.push_up,
+        range = viewModel.pushUpRange,
+        currentValue = viewModel.pushCount,
+        onValueChange = { viewModel.pushCount = it }
+    )
 }
 
 @Composable
 fun Abs(modifier: Modifier, viewModel: TgcfViewModel) {
-    val range = viewModel.absRange //Rango de los abdominales
-    var myText by remember { mutableStateOf(viewModel.absCount.toString()) }
-    var sliderPosition by remember { mutableStateOf(range.first.toFloat()) }
-
-    Card(
-        modifier
-            .fillMaxSize()
-            .border(
-                width = 4.dp, color = borderColor, shape = RoundedCornerShape(16.dp)
-            ),
-        colors = CardDefaults.cardColors(containerColor = primaryColor),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .background(primaryColor)
-                    .align(Alignment.Center)
-                    .padding(top = 15.dp)
-            ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.abs), contentDescription = "push up"
-                )
-            }
-            Text(
-                "Abdominales", style = TextStyle(
-                    color = textPrimaryColor,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Serif,
-                    textAlign = TextAlign.Center
-                ), modifier = Modifier.align(Alignment.TopCenter)
-
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            TextField(
-                value = sliderPosition.toInt().toString(),
-                onValueChange = { newValue ->
-                    sliderPosition = newValue.toFloat()
-                    viewModel.absCount = newValue.toIntOrNull() ?: 0
-                    newValue.toIntOrNull()?.let { intValue ->
-                        sliderPosition = intValue.toFloat()
-                    }
-                },
-                modifier = Modifier.size(55.dp),
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = primaryColor,
-                    unfocusedContainerColor = primaryColor,
-                    focusedTextColor = textPrimaryColor,
-                    unfocusedTextColor = textPrimaryColor,
-                    unfocusedIndicatorColor = Color.Transparent
-                )
-            )
-            Slider(
-                value = sliderPosition,
-                onValueChange = { newValue ->
-                    val rounValue = newValue.roundToInt().toFloat()
-                    sliderPosition = rounValue
-                    myText = newValue.toInt().toString()
-                },
-                valueRange = range.first.toFloat()..range.second.toFloat(),
-                steps = range.second - range.first,
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp),
-                colors = SliderDefaults.colors(
-                    thumbColor = thumbColor, //Color del circulo deslizable
-                    activeTrackColor = secondaryColor, //Color de la parte activa del Slider
-                    inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
-                )
-            )
-        }
-    }
+    ExerciseCard(
+        modifier = modifier,
+        viewModel = viewModel,
+        title = "Abdominales",
+        image = R.drawable.abs,
+        range = viewModel.absRange,
+        currentValue = viewModel.absCount,
+        onValueChange = { viewModel.absCount = it }
+    )
 }
 
 @Composable
 fun Speed(modifier: Modifier, viewModel: TgcfViewModel) {
-    var range = viewModel.speedRange//Rango de las velocidades
-    var myText by remember { mutableStateOf(viewModel.speedTime.toString()) }
-    var sliderPosition by remember { mutableStateOf(range.first.toFloat()) }
-    Card(
-        modifier
-            .fillMaxSize()
-            .border(
-                width = 4.dp, color = borderColor, shape = RoundedCornerShape(16.dp)
-            ),
-        colors = CardDefaults.cardColors(containerColor = primaryColor),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .background(primaryColor)
-                    .align(Alignment.Center)
-                    .padding(top = 10.dp)
-            ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.speed), contentDescription = "push up"
-                )
-            }
-            Text(
-                "Velocidad", style = TextStyle(
-                    color = textPrimaryColor,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Serif,
-                    textAlign = TextAlign.Center
-                ), modifier = Modifier.align(Alignment.TopCenter)
-
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            TextField(
-                value = sliderPosition.toInt().toString(),
-                onValueChange = { newValue ->
-                    sliderPosition = newValue.toFloat()
-                    viewModel.speedTime= newValue.toIntOrNull() ?: 0
-                    newValue.toIntOrNull()?.let { intValue ->
-                        sliderPosition = intValue.toFloat()
-                    }
-                },
-                modifier = Modifier.size(55.dp),
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = primaryColor,
-                    unfocusedContainerColor = primaryColor,
-                    focusedTextColor = textPrimaryColor,
-                    unfocusedTextColor = textPrimaryColor,
-                    unfocusedIndicatorColor = Color.Transparent
-                )
-            )
-            Slider(
-                value = sliderPosition,
-                onValueChange = { newValue ->
-                    val rounValue = newValue.roundToInt().toFloat()
-                    sliderPosition = rounValue
-                    myText = newValue.toInt().toString()
-                },
-                valueRange = range.first.toFloat()..range.second.toFloat(),
-                steps = range.second - range.first,
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp),
-                colors = SliderDefaults.colors(
-                    thumbColor = thumbColor, //Color del circulo deslizable
-                    activeTrackColor = secondaryColor, //Color de la parte activa del Slider
-                    inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
-                )
-            )
-
-            Slider(
-                value = sliderPosition,
-                onValueChange = { newValue ->
-                    val rounValue = newValue.roundToInt().toFloat()
-                    sliderPosition = rounValue
-                    myText = newValue.toInt().toString()
-                },
-                valueRange = range.first.toFloat()..range.second.toFloat(),
-                steps = range.second - range.first,
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp),
-                colors = SliderDefaults.colors(
-                    thumbColor = thumbColor, //Color del circulo deslizable
-                    activeTrackColor = secondaryColor, //Color de la parte activa del Slider
-                    inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
-                )
-            )
-
-        }
-    }
+    ExerciseCard(
+        modifier = modifier,
+        viewModel = viewModel,
+        title = "Velocidad",
+        image = R.drawable.speed,
+        range = viewModel.speedRange,
+        currentValue = viewModel.speedTime,
+        onValueChange = { viewModel.speedTime = it }
+    )
 }
 
 @Composable
-fun Resistance(modifier: Modifier) {
-    var myText by remember { mutableStateOf("") }
-    var sliderPosition by remember { mutableStateOf(0f) }
-    Card(
-        modifier
-            .fillMaxSize()
-            .border(
-                width = 4.dp, color = borderColor, shape = RoundedCornerShape(16.dp)
-            ),
-        colors = CardDefaults.cardColors(containerColor = primaryColor),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .background(primaryColor)
-                    .align(Alignment.Center)
-                    .padding(top = 10.dp)
-            ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.resistance),
-                    contentDescription = "push up"
-                )
-            }
-            Text(
-                "Resistencia", style = TextStyle(
-                    color = textPrimaryColor,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Serif,
-                    textAlign = TextAlign.Center
-                ), modifier = Modifier.align(Alignment.TopCenter)
-
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            TextField(
-                value = myText,
-                onValueChange = { newValue ->
-                    myText = newValue
-                    newValue.toIntOrNull()?.let { intValue ->
-                        sliderPosition = intValue.toFloat()
-                    }
-                },
-                modifier = Modifier.size(55.dp),
-                maxLines = 1,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = primaryColor,
-                    unfocusedContainerColor = primaryColor,
-                    focusedTextColor = textPrimaryColor,
-                    unfocusedTextColor = textPrimaryColor,
-                    unfocusedIndicatorColor = Color.Transparent
-                )
-            )
-            Slider(
-                value = sliderPosition,
-                onValueChange = { newValue ->
-                    val rounValue = newValue.roundToInt().toFloat()
-                    sliderPosition = rounValue
-                    myText = newValue.toInt().toString()
-                },
-                modifier = Modifier.padding(start = 24.dp, end = 24.dp),
-                valueRange = 0f..10f,
-                steps = 9,
-                colors = SliderDefaults.colors(
-                    thumbColor = thumbColor, //Color del circulo deslizable
-                    activeTrackColor = secondaryColor, //Color de la parte activa del Slider
-                    inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
-                )
-            )
-        }
-    }
+fun Resistance(modifier: Modifier, viewModel: TgcfViewModel) {
+    ExerciseCard(
+        modifier = modifier,
+        viewModel = viewModel,
+        title = "6 KM",
+        image = R.drawable.resistance,
+        range = viewModel.runRange,
+        currentValue = viewModel.runTime,
+        onValueChange = { viewModel.runTime = it }
+    )
 }
+
 
 

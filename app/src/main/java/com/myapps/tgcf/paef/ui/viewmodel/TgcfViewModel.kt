@@ -16,6 +16,7 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     var showAgeDialog by mutableStateOf(false) //Estado para controlar la visibilidad del Dialogo Edad
     private set
     var pushCount by mutableStateOf(0)
+    var pushPoint by mutableStateOf(0)
     var absCount by mutableStateOf(0)
     var speedTime by mutableStateOf(0)
     var runTime by mutableStateOf(0)
@@ -93,7 +94,7 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     fun updateAllRanges() {
         pushUpRange = ScoreTables.getPushUpRange(ageGroup, isMale)
         absRange = ScoreTables.getAbsRange(ageGroup, isMale)
-        speedRange=ScoreTables.getSpeddRange(ageGroup,isMale)
+        //speedRange=ScoreTables.getSpeddRange(ageGroup,isMale)
         runRange=ScoreTables.getRunRange(ageGroup, isMale)
     }
 

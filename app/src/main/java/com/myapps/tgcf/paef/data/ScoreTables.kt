@@ -4770,7 +4770,13 @@ object ScoreTables {
 
     fun getPushUpRange(ageGroup: Int, isMale: Boolean) = getTestRange(pushUps, ageGroup, isMale)
     fun getAbsRange(ageGroup: Int, isMale: Boolean) = getTestRange(abs, ageGroup, isMale)
-    fun getSpeddRange(ageGroup: Int, isMale: Boolean) = getTestRange(speed, ageGroup, isMale)
+    //fun getSpeddRange(ageGroup: Int, isMale: Boolean) = getTestRange(speed, ageGroup, isMale)
     fun getRunRange(ageGroup: Int, isMale: Boolean) = getTestRange(run, ageGroup, isMale)
+
+//    fun getPushScore(ageGroup: Int, isMale: Boolean, value:Int){
+//        val gender = if (isMale) "M" else "F"
+//        val scoreMap = pushUps[ageGroup]?.get(gender) ?: return 0
+//        return scoreMap.floorEntry(value)?.value ?:0
+//    }
 
 }
