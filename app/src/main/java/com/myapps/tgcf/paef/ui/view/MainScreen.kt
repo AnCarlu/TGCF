@@ -175,6 +175,7 @@ fun Result(
                                     isManSelected = true
                                     viewModel.isMale = true
                                     viewModel.updateAllRanges()
+                                    viewModel.updateAllScores()
                                 }
                                 .alpha(if (isManSelected) 1f else 0.8f),
                             tint = if (isManSelected) backIconColor else Color.Gray)
@@ -187,6 +188,7 @@ fun Result(
                                     isManSelected = false
                                     viewModel.isMale = false
                                     viewModel.updateAllRanges()
+                                    viewModel.updateAllScores()
                                 }
                                 .alpha(if (isManSelected) 0.8f else 1f),
                             tint = if (!isManSelected) backIconColor else Color.Gray)
@@ -317,6 +319,7 @@ fun Age(viewModel: TgcfViewModel) {
     }
 }
 
+
 @Composable
 fun ExerciseCard(
     modifier: Modifier,
@@ -333,7 +336,9 @@ fun ExerciseCard(
         modifier
             .fillMaxSize()
             .border(
-                width = 4.dp, color = borderColor, shape = RoundedCornerShape(16.dp)
+                width = 4.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(16.dp)
             ), colors = CardDefaults.cardColors(containerColor = primaryColor),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -379,7 +384,7 @@ fun ExerciseCard(
                 ) {
 
                     TextField(
-                        value = "Puntos: " + sliderPosition.toInt().toString(),
+                        value = "Puntos:  $currentValue",
                         onValueChange = { newValue ->
                             sliderPosition = newValue.toFloat()
                             viewModel.pushCount = newValue.toIntOrNull() ?: 0
@@ -389,6 +394,7 @@ fun ExerciseCard(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
+                        readOnly = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = primaryColor.copy(alpha = 0.01f),
@@ -444,6 +450,7 @@ fun ExerciseCard(
     }
 }
 
+
 //Funcion para controlar la Card de las flexiones
 @Composable
 fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
@@ -453,8 +460,11 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
         title = "Flexiones",
         image = R.drawable.push_up,
         range = viewModel.pushUpRange,
-        currentValue = viewModel.pushCount,
-        onValueChange = { viewModel.pushCount = it }
+        currentValue = viewModel.pushPoint,
+        onValueChange = {
+            viewModel.pushCount = it
+            viewModel.updateAllScores()
+        }
     )
 }
 
@@ -466,8 +476,11 @@ fun Abs(modifier: Modifier, viewModel: TgcfViewModel) {
         title = "Abdominales",
         image = R.drawable.abs,
         range = viewModel.absRange,
-        currentValue = viewModel.absCount,
-        onValueChange = { viewModel.absCount = it }
+        currentValue = viewModel.absPoint,
+        onValueChange = {
+            viewModel.absCount = it
+            viewModel.updateAllScores()
+        }
     )
 }
 
@@ -492,8 +505,11 @@ fun Resistance(modifier: Modifier, viewModel: TgcfViewModel) {
         title = "6 KM",
         image = R.drawable.resistance,
         range = viewModel.runRange,
-        currentValue = viewModel.runTime,
-        onValueChange = { viewModel.runTime = it }
+        currentValue = viewModel.runPoint,
+        onValueChange = {
+            viewModel.runTime = it
+            viewModel.updateAllScores()
+        }
     )
 }
 

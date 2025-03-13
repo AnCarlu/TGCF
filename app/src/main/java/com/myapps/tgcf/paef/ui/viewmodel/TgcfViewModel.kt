@@ -1,6 +1,7 @@
 package com.myapps.tgcf.paef.ui.viewmodel
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
@@ -14,13 +15,15 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
 
     var isMale by mutableStateOf(true) //Estado para controlar el sexo marcado
     var showAgeDialog by mutableStateOf(false) //Estado para controlar la visibilidad del Dialogo Edad
-    private set
-    var pushCount by mutableStateOf(0)
-    var pushPoint by mutableStateOf(0)
+        private set
+    var pushCount by mutableIntStateOf(0)//
+    var pushPoint by mutableIntStateOf(0)//Puntos de las flexiones
     var absCount by mutableStateOf(0)
+    var absPoint by mutableStateOf(0)//Puntos de los abdominales
     var speedTime by mutableStateOf(0)
-    var runTime by mutableStateOf(0)
-    var pushUpRange by mutableStateOf(0 to 0)
+    var runTime by mutableStateOf(0)//Tiempo en la carrera
+    var runPoint by mutableStateOf(0)//Puntos en la carrera
+    var pushUpRange by mutableStateOf(0 to 0)//
     var absRange by mutableStateOf(0 to 0)
     var speedRange by mutableStateOf(0 to 0)
     var runRange by mutableStateOf(0 to 0)
@@ -29,7 +32,7 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     var ageInput: Int
         get() = _ageInput
         set(value) {
-            _ageInput=value
+            _ageInput = value
             calculateFinalScore()
         }
 
@@ -49,32 +52,33 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
 
     //Estado temporal para el Slider de Edad
     private var _ageDialog by mutableStateOf(0)
-    val ageDialog: Int get()=_ageDialog
+    val ageDialog: Int get() = _ageDialog
 
     //Funcion para mostrar el Dialog de Edad
     fun openAgeDialog() {
-        showAgeDialog=true
-        _ageDialog= if (ageInput in 17..61) ageInput else 17
+        showAgeDialog = true
+        _ageDialog = if (ageInput in 17..61) ageInput else 17
 
     }
 
     //Funcion para cerrar el Dialog de Edad
-    fun closeAgeDialog(){
-        showAgeDialog=false
+    fun closeAgeDialog() {
+        showAgeDialog = false
     }
 
     //Funcion para confirmar la seleccion de Edad
-    fun confirmAgeSelect(){
-        ageInput=_ageDialog
+    fun confirmAgeSelect() {
+        ageInput = _ageDialog
         calculateFinalScore()
         closeAgeDialog()
     }
 
     //Funcion para actualizar el valor del Slider de Edad
-    fun updateAgeTemplete(value:Float){
-        _ageDialog= value.toInt()
+    fun updateAgeTemplete(value: Float) {
+        _ageDialog = value.toInt()
     }
 
+    //Calcular el rango de edad para las tablas de los ejercicios
     fun calculateFinalScore() {
         ageGroup = when (ageInput) {
             in 17..21 -> 1
@@ -89,13 +93,20 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
             else -> 10
         }
         updateAllRanges()
+        updateAllScores()
     }
 
     fun updateAllRanges() {
         pushUpRange = ScoreTables.getPushUpRange(ageGroup, isMale)
         absRange = ScoreTables.getAbsRange(ageGroup, isMale)
         //speedRange=ScoreTables.getSpeddRange(ageGroup,isMale)
-        runRange=ScoreTables.getRunRange(ageGroup, isMale)
+        runRange = ScoreTables.getRunRange(ageGroup, isMale)
+    }
+
+    fun updateAllScores() {
+        pushPoint = ScoreTables.getPushUpScore(ageGroup, isMale, pushCount)
+        absPoint = ScoreTables.getAbsScore(ageGroup, isMale, absCount)
+        runPoint=ScoreTables.getRunScore(ageGroup,isMale,runTime)
     }
 
 

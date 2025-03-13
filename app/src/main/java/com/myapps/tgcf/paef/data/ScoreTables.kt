@@ -4768,15 +4768,67 @@ object ScoreTables {
             } ?: Pair(0, 0)
     }
 
+    //Funciones para conseguir los rangos de las marcas
     fun getPushUpRange(ageGroup: Int, isMale: Boolean) = getTestRange(pushUps, ageGroup, isMale)
     fun getAbsRange(ageGroup: Int, isMale: Boolean) = getTestRange(abs, ageGroup, isMale)
-    //fun getSpeddRange(ageGroup: Int, isMale: Boolean) = getTestRange(speed, ageGroup, isMale)
+
+   // fun getSpeddRange(ageGroup: Int, isMale: Boolean) = getTestRange(speed, ageGroup, isMale)
     fun getRunRange(ageGroup: Int, isMale: Boolean) = getTestRange(run, ageGroup, isMale)
 
-//    fun getPushScore(ageGroup: Int, isMale: Boolean, value:Int){
-//        val gender = if (isMale) "M" else "F"
-//        val scoreMap = pushUps[ageGroup]?.get(gender) ?: return 0
-//        return scoreMap.floorEntry(value)?.value ?:0
-//    }
+    /*
+    Funcion que obtiene la nota obtenida en las pruebas de abdominales y flexiones
+    basado en el grupo de edad, genero, y el valor de las repeticiones,
+    cuanto mas alto es el valor, mayor la puntuacion
+     */
+    fun getScoreHigger(
+        table: Map<Int, Map<String, SortedMap<Int, Int>>>, //tabla a la accede
+        ageGroup: Int, //grudo de edad
+        isMale: Boolean,
+        value: Int
+    ): Int {
+        val gender = if (isMale) "M" else "F"
+        val scoresMap = table[ageGroup]?.get(gender) ?: return 0
+
+        // Iterar en orden descendente para encontrar el mayor key <= value
+        for (key in scoresMap.keys.reversed()) {
+            if (value >= key) {
+                return scoresMap[key] ?: 0
+            }
+        }
+        return 0 // Si el valor es menor que todas las claves
+    }
+
+    //Funciones para recuperar la puntuacion
+    fun getPushUpScore(ageGroup: Int, isMale: Boolean, value: Int) =
+        getScoreHigger(pushUps, ageGroup, isMale, value)
+
+    fun getAbsScore(ageGroup: Int, isMale: Boolean, value: Int) =
+        getScoreHigger(abs, ageGroup, isMale, value)
+
+    /*
+    Funcion que obtiene la puntuacion cuanto mas bajo el puntuaje, mayor la nota
+     */
+    fun getScoreLower(
+        table: Map<Int, Map<String, SortedMap<Int, Int>>>, //tabla a la accede
+        ageGroup: Int, //grudo de edad
+        isMale: Boolean,
+        value: Int
+    ): Int {
+        val gender = if (isMale) "M" else "F"
+        val scoresMap = table[ageGroup]?.get(gender) ?: return 0
+
+        // Iterar en orden ascendente para encontrar el menor key >= value
+        for (key in scoresMap.keys) {
+            if (value <= key) {
+                return scoresMap[key] ?: 0
+            }
+        }
+        // Si el valor es mayor que todas las claves, retornar el peor puntaje
+        return scoresMap[scoresMap.lastKey()] ?: 0
+    }
+
+    fun getRunScore(ageGroup: Int, isMale: Boolean, value: Int) =
+        getScoreHigger( run, ageGroup, isMale, value)
+
 
 }
