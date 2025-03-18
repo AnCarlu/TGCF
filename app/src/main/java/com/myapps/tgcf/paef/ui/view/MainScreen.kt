@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -146,9 +147,23 @@ fun Result(
     isAplChecked: Boolean,
     onAplCheckedChanged: (Boolean) -> Unit
 ) {
-    var resutl by remember { mutableStateOf("") }
-    var isManSelected by remember { mutableStateOf(true) } //Variable para cambiar el color del sexo
 
+    var isManSelected by remember { mutableStateOf(true) } //Variable para cambiar el color del sexo
+    // Calculamos el resultado directamente
+    val result = remember {
+        derivedStateOf {
+            (((viewModel.pushPoint + viewModel.absPoint) / 2) +
+                    viewModel.speedPoint + viewModel.runPoint) / 4
+        }
+    }
+
+    // Texto con la operación completa
+    val operationText = remember {
+        derivedStateOf {
+            "(((${viewModel.pushPoint} + ${viewModel.absPoint})/2) + " +
+                    "${viewModel.speedPoint} + ${viewModel.runPoint})/4 = ${result.value}"
+        }
+    }
 
     Card(
         modifier
@@ -251,10 +266,11 @@ fun Result(
                         Spacer(Modifier.padding(16.dp))
 
                         TextField(
-                            value = resutl,
-                            onValueChange = { resutl = it },
-                            modifier = Modifier.size(55.dp),
-                            maxLines = 1,
+                            value = result.value.toString() ,
+                            onValueChange = {   },
+                            modifier = Modifier.fillMaxSize(),
+                            //maxLines = 1,
+                            //47,41,46,72=40
                             readOnly = true,
                             colors = TextFieldDefaults.colors(
                                 focusedContainerColor = primaryColor,
@@ -323,7 +339,6 @@ fun Age(viewModel: TgcfViewModel) {
 @Composable
 fun ExerciseCard(
     modifier: Modifier,
-    viewModel: TgcfViewModel,
     title: String,
     image: Int,
     range: Pair<Int, Int>,
@@ -387,7 +402,6 @@ fun ExerciseCard(
                         value = "Puntos:  $currentValue",
                         onValueChange = { newValue ->
                             sliderPosition = newValue.toFloat()
-                            viewModel.pushCount = newValue.toIntOrNull() ?: 0
                             newValue.toIntOrNull()?.let { intValue ->
                                 sliderPosition = intValue.toFloat()
                             }
@@ -410,7 +424,6 @@ fun ExerciseCard(
                         value = "Repeticiones: " + sliderPosition.toInt().toString(),
                         onValueChange = { newValue ->
                             sliderPosition = newValue.toFloat()
-                            viewModel.pushCount = newValue.toIntOrNull() ?: 0
                             newValue.toIntOrNull()?.let { intValue ->
                                 sliderPosition = intValue.toFloat()
                             }
@@ -450,13 +463,138 @@ fun ExerciseCard(
     }
 }
 
+@Composable
+fun ExerciseCardSpeed(
+    modifier: Modifier,
+    title: String,
+    image: Int,
+    range: Pair<Double, Double>,
+    currentValue: Int,
+    onValueChange: (Double) -> Unit
+) {
+    var myText by remember { mutableStateOf(currentValue.toString()) }
+    var sliderPosition by remember { mutableStateOf(range.first) }
+    Card(
+        modifier
+            .fillMaxSize()
+            .border(
+                width = 4.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(16.dp)
+            ), colors = CardDefaults.cardColors(containerColor = primaryColor),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
+        ) {
+            // Imagen de fondo
+            Image(
+                painter = painterResource(id = image),
+                contentDescription = "background image",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.25f),  // Ajusta transparencia
+                contentScale = ContentScale.FillBounds
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    title, style = TextStyle(
+                        color = textPrimaryColor,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Serif,
+                        textAlign = TextAlign.Center
+                    ), modifier = Modifier.padding(top = 8.dp)
+                )
+
+                // Controles interactivos
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+
+                    TextField(
+                        value = "Puntos:  $currentValue",
+                        onValueChange = { newValue ->
+                            sliderPosition = newValue.toDouble()
+                            newValue.toIntOrNull()?.let { intValue ->
+                                sliderPosition = intValue.toDouble()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 1,
+                        readOnly = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = primaryColor.copy(alpha = 0.01f),
+                            unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
+                            focusedTextColor = textPrimaryColor,
+                            unfocusedTextColor = textPrimaryColor,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
+                    )
+
+                    Spacer(Modifier.size(16.dp))
+                    TextField(
+                        value = "Tiempo: %.1f segundos".format(sliderPosition),
+                        onValueChange = { newValue ->
+                            sliderPosition = newValue.toDouble()
+                            newValue.toIntOrNull()?.let { intValue ->
+                                sliderPosition = intValue.toDouble()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 1,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = primaryColor.copy(alpha = 0.01f),
+                            unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
+                            focusedTextColor = textPrimaryColor,
+                            unfocusedTextColor = textPrimaryColor,
+                            unfocusedIndicatorColor = Color.Transparent
+                        )
+                    )
+
+                    Slider(
+                        value = sliderPosition.toFloat(),
+                        onValueChange = { newValue ->
+                            val rounValue = newValue.toDouble()
+                            sliderPosition = rounValue
+                            myText = "%.1f".format(rounValue)
+                            onValueChange(rounValue)
+                        },
+                        valueRange = range.first.toFloat()..range.second.toFloat(),
+                        steps = ((range.second - range.first) / 0.1).toInt(),
+                        modifier = Modifier.padding(start = 24.dp, end = 24.dp),
+                        colors = SliderDefaults.colors(
+                            thumbColor = thumbColor, //Color del circulo deslizable
+                            activeTrackColor = secondaryColor, //Color de la parte activa del Slider
+                            inactiveTrackColor = Color.LightGray //Color de la parte desactivada del slider
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
 
 //Funcion para controlar la Card de las flexiones
 @Composable
 fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
     ExerciseCard(
         modifier = modifier,
-        viewModel = viewModel,
         title = "Flexiones",
         image = R.drawable.push_up,
         range = viewModel.pushUpRange,
@@ -472,7 +610,6 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
 fun Abs(modifier: Modifier, viewModel: TgcfViewModel) {
     ExerciseCard(
         modifier = modifier,
-        viewModel = viewModel,
         title = "Abdominales",
         image = R.drawable.abs,
         range = viewModel.absRange,
@@ -486,14 +623,16 @@ fun Abs(modifier: Modifier, viewModel: TgcfViewModel) {
 
 @Composable
 fun Speed(modifier: Modifier, viewModel: TgcfViewModel) {
-    ExerciseCard(
+    ExerciseCardSpeed(
         modifier = modifier,
-        viewModel = viewModel,
         title = "Velocidad",
         image = R.drawable.speed,
         range = viewModel.speedRange,
-        currentValue = viewModel.speedTime,
-        onValueChange = { viewModel.speedTime = it }
+        currentValue = viewModel.speedPoint,
+        onValueChange = {
+            viewModel.speedTime = it
+            viewModel.updateAllScores()
+        }
     )
 }
 
@@ -501,7 +640,6 @@ fun Speed(modifier: Modifier, viewModel: TgcfViewModel) {
 fun Resistance(modifier: Modifier, viewModel: TgcfViewModel) {
     ExerciseCard(
         modifier = modifier,
-        viewModel = viewModel,
         title = "6 KM",
         image = R.drawable.resistance,
         range = viewModel.runRange,

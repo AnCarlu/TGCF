@@ -1,5 +1,6 @@
 package com.myapps.tgcf.paef.data
 
+import java.util.Locale
 import java.util.SortedMap
 
 object ScoreTables {
@@ -1451,104 +1452,122 @@ object ScoreTables {
         pushUps[1] = mapOf(
             "M" to sortedMapOf(
                 63 to 100,
-                62 to 98,
-                61 to 96,
-                60 to 94,
+                62 to 99,
+                61 to 98,
+                60 to 96,
                 59 to 93,
                 58 to 91,
                 57 to 90,
                 56 to 88,
-                55 to 87,
-                54 to 85,
-                53 to 83,
-                52 to 82,
-                51 to 80,
-                50 to 79,
-                49 to 77,
-                48 to 76,
-                47 to 74,
-                46 to 72,
-                45 to 70,
-                44 to 69,
-                43 to 68,
-                42 to 66,
-                41 to 64,
-                40 to 63,
-                39 to 61,
-                38 to 60,
-                37 to 58,
-                36 to 57,
-                35 to 55,
-                34 to 53,
-                33 to 52,
-                32 to 50,
-                31 to 49,
-                30 to 47,
-                29 to 46,
-                28 to 44,
-                27 to 42,
-                26 to 40,
-                25 to 39,
-                24 to 38,
-                23 to 36,
-                22 to 35,
-                21 to 33,
-                20 to 31,
-                19 to 30,
-                18 to 28,
-                17 to 27,
-                16 to 25,
-                15 to 23,
-                14 to 22,
-                13 to 20,
-                12 to 19,
-                11 to 17,
-                10 to 16,
-                9 to 14,
-                8 to 12,
-                7 to 11,
-                6 to 9,
-                5 to 8,
-                4 to 6,
-                3 to 5,
+                55 to 86,
+                54 to 84,
+                53 to 82,
+                52 to 80,
+                51 to 78,
+                50 to 76,
+                49 to 74,
+                48 to 72,
+                47 to 70,
+                46 to 68,
+                45 to 66,
+                44 to 64,
+                43 to 62,
+                42 to 60,
+                41 to 58,
+                40 to 56,
+                39 to 54,
+                38 to 52,
+                37 to 50,
+                36 to 48,
+                35 to 46,
+                34 to 44,
+                33 to 42,
+                32 to 40,
+                31 to 38,
+                30 to 36,
+                29 to 34,
+                28 to 32,
+                27 to 30,
+                26 to 28,
+                25 to 26,
+                24 to 25,
+                23 to 24,
+                22 to 23,
+                21 to 22,
+                20 to 21,
+                19 to 20,
+                18 to 19,
+                17 to 18,
+                16 to 17,
+                15 to 16,
+                14 to 15,
+                13 to 14,
+                12 to 13,
+                11 to 12,
+                10 to 11,
+                9 to 10,
+                8 to 9,
+                7 to 8,
+                6 to 7,
+                5 to 6,
+                4 to 5,
+                3 to 4,
                 2 to 3,
-                1 to 1
+                1 to 2,
+                0 to 0
             ), "F" to sortedMapOf(
-                30 to 100,
-                29 to 98,
-                28 to 95,
-                27 to 92,
-                26 to 90,
-                25 to 86,
-                24 to 84,
-                23 to 82,
-                22 to 79,
-                21 to 76,
-                20 to 74,
-                19 to 71,
-                18 to 69,
-                17 to 66,
-                16 to 63,
-                15 to 61,
-                14 to 58,
-                13 to 55,
-                12 to 53,
-                11 to 50,
-                10 to 48,
-                9 to 45,
-                8 to 42,
-                7 to 40,
-                6 to 37,
-                5 to 35,
-                4 to 32,
-                3 to 29,
-                2 to 27,
-                1 to 24
+                46 to 100,
+                45 to 98,
+                44 to 95,
+                43 to 93,
+                42 to 90,
+                41 to 88,
+                40 to 86,
+                39 to 84,
+                38 to 82,
+                37 to 80,
+                36 to 78,
+                35 to 76,
+                34 to 74,
+                33 to 72,
+                32 to 70,
+                31 to 68,
+                30 to 66,
+                29 to 64,
+                28 to 62,
+                27 to 60,
+                26 to 58,
+                25 to 56,
+                24 to 54,
+                23 to 52,
+                22 to 50,
+                21 to 48,
+                20 to 46,
+                19 to 44,
+                18 to 42,
+                17 to 40,
+                16 to 38,
+                15 to 36,
+                14 to 34,
+                13 to 32,
+                12 to 30,
+                11 to 28,
+                10 to 26,
+                9 to 20,
+                8 to 19,
+                7 to 18,
+                6 to 17,
+                5 to 16,
+                4 to 15,
+                3 to 14,
+                2 to 13,
+                1 to 6,
+                0 to 0
             )
         )
         pushUps[2] = mapOf(
             "M" to sortedMapOf(
-                64 to 100,
+                67 to 100,
                 63 to 98,
                 62 to 97,
                 61 to 95,
@@ -4768,12 +4787,17 @@ object ScoreTables {
             } ?: Pair(0, 0)
     }
 
+
     //Funciones para conseguir los rangos de las marcas
     fun getPushUpRange(ageGroup: Int, isMale: Boolean) = getTestRange(pushUps, ageGroup, isMale)
     fun getAbsRange(ageGroup: Int, isMale: Boolean) = getTestRange(abs, ageGroup, isMale)
-
-   // fun getSpeddRange(ageGroup: Int, isMale: Boolean) = getTestRange(speed, ageGroup, isMale)
     fun getRunRange(ageGroup: Int, isMale: Boolean) = getTestRange(run, ageGroup, isMale)
+    fun getSpeedRange(ageGroup: Int, isMale: Boolean): Pair<Double, Double> {
+        val gender = if (isMale) "M" else "F"
+        return speed[ageGroup]?.get(gender)?.let {
+            if (it.isNotEmpty()) Pair(it.firstKey(), it.lastKey()) else Pair(0.0, 0.0)
+        } ?: Pair(0.0, 0.0)
+    }
 
     /*
     Funcion que obtiene la nota obtenida en las pruebas de abdominales y flexiones
@@ -4798,16 +4822,9 @@ object ScoreTables {
         return 0 // Si el valor es menor que todas las claves
     }
 
-    //Funciones para recuperar la puntuacion
-    fun getPushUpScore(ageGroup: Int, isMale: Boolean, value: Int) =
-        getScoreHigger(pushUps, ageGroup, isMale, value)
-
-    fun getAbsScore(ageGroup: Int, isMale: Boolean, value: Int) =
-        getScoreHigger(abs, ageGroup, isMale, value)
-
     /*
-    Funcion que obtiene la puntuacion cuanto mas bajo el puntuaje, mayor la nota
-     */
+   Funcion que obtiene la puntuacion cuanto mas bajo el puntuaje, mayor la nota
+    */
     fun getScoreLower(
         table: Map<Int, Map<String, SortedMap<Int, Int>>>, //tabla a la accede
         ageGroup: Int, //grudo de edad
@@ -4827,8 +4844,35 @@ object ScoreTables {
         return scoresMap[scoresMap.lastKey()] ?: 0
     }
 
+    //Funciones para recuperar la puntuacion
+    fun getSpeedScore(
+        ageGroup: Int,
+        isMale: Boolean,
+        value: Double
+    ): Int {
+        val gender = if (isMale) "M" else "F"
+        val scoresMap = speed[ageGroup]?.get(gender) ?: return 0
+
+        // Redondea el valor a 1 decimal para evitar errores de precisión
+        val roundedValue = "%.1f".format(Locale.US, value).toDouble()
+
+        // Busca la clave más cercana menor o igual al valor
+        for (key in scoresMap.keys) {
+            if (roundedValue <= key) {
+                return scoresMap[key] ?: 0
+            }
+        }
+        return scoresMap[scoresMap.lastKey()] ?: 0
+    }
+
+    fun getPushUpScore(ageGroup: Int, isMale: Boolean, value: Int) =
+        getScoreHigger(pushUps, ageGroup, isMale, value)
+
+    fun getAbsScore(ageGroup: Int, isMale: Boolean, value: Int) =
+        getScoreHigger(abs, ageGroup, isMale, value)
+
     fun getRunScore(ageGroup: Int, isMale: Boolean, value: Int) =
-        getScoreHigger( run, ageGroup, isMale, value)
+        getScoreLower(run, ageGroup, isMale, value)
 
 
 }

@@ -20,12 +20,13 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     var pushPoint by mutableIntStateOf(0)//Puntos de las flexiones
     var absCount by mutableStateOf(0)
     var absPoint by mutableStateOf(0)//Puntos de los abdominales
-    var speedTime by mutableStateOf(0)
+    var speedTime by mutableStateOf(0.0)//Tiempo de velocidad
+    var speedPoint by mutableStateOf(0) // Puntos de velocidad
     var runTime by mutableStateOf(0)//Tiempo en la carrera
     var runPoint by mutableStateOf(0)//Puntos en la carrera
     var pushUpRange by mutableStateOf(0 to 0)//
     var absRange by mutableStateOf(0 to 0)
-    var speedRange by mutableStateOf(0 to 0)
+    var speedRange by mutableStateOf(0.0 to 0.0)
     var runRange by mutableStateOf(0 to 0)
 
     var _ageInput by mutableStateOf(0)
@@ -99,7 +100,7 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     fun updateAllRanges() {
         pushUpRange = ScoreTables.getPushUpRange(ageGroup, isMale)
         absRange = ScoreTables.getAbsRange(ageGroup, isMale)
-        //speedRange=ScoreTables.getSpeddRange(ageGroup,isMale)
+        speedRange=ScoreTables.getSpeedRange(ageGroup,isMale)
         runRange = ScoreTables.getRunRange(ageGroup, isMale)
     }
 
@@ -107,6 +108,7 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
         pushPoint = ScoreTables.getPushUpScore(ageGroup, isMale, pushCount)
         absPoint = ScoreTables.getAbsScore(ageGroup, isMale, absCount)
         runPoint=ScoreTables.getRunScore(ageGroup,isMale,runTime)
+        speedPoint = ScoreTables.getSpeedScore(ageGroup, isMale, speedTime)
     }
 
 
