@@ -149,21 +149,14 @@ fun Result(
 ) {
 
     var isManSelected by remember { mutableStateOf(true) } //Variable para cambiar el color del sexo
-    // Calculamos el resultado directamente
+    // Calculo de la nota final
     val result = remember {
         derivedStateOf {
-            (((viewModel.pushPoint + viewModel.absPoint) / 2) +
-                    viewModel.speedPoint + viewModel.runPoint) / 4
+            (((viewModel.pushPoint + viewModel.absPoint) +
+                    viewModel.speedPoint + viewModel.runPoint) / 4)/10
         }
     }
 
-    // Texto con la operación completa
-    val operationText = remember {
-        derivedStateOf {
-            "(((${viewModel.pushPoint} + ${viewModel.absPoint})/2) + " +
-                    "${viewModel.speedPoint} + ${viewModel.runPoint})/4 = ${result.value}"
-        }
-    }
 
     Card(
         modifier
@@ -266,12 +259,17 @@ fun Result(
                         Spacer(Modifier.padding(16.dp))
 
                         TextField(
-                            value = result.value.toString() ,
-                            onValueChange = {   },
-                            modifier = Modifier.fillMaxSize(),
-                            //maxLines = 1,
-                            //47,41,46,72=40
+                            value = result.value.toString(),
+                            onValueChange = { },
+                            modifier = Modifier.size(100.dp),
                             readOnly = true,
+                            textStyle = TextStyle(
+                                fontSize = 40.sp,
+                                fontWeight = FontWeight.Bold,
+                                fontFamily = FontFamily.Serif,
+                                textAlign = TextAlign.Center,
+                                fontStyle = FontStyle.Italic
+                            ),
                             colors = TextFieldDefaults.colors(
                                 focusedContainerColor = primaryColor,
                                 unfocusedContainerColor = primaryColor,
@@ -340,6 +338,8 @@ fun Age(viewModel: TgcfViewModel) {
 fun ExerciseCard(
     modifier: Modifier,
     title: String,
+    text: String,
+    showSliderPosition: Boolean,
     image: Int,
     range: Pair<Int, Int>,
     currentValue: Int,
@@ -421,7 +421,11 @@ fun ExerciseCard(
 
                     Spacer(Modifier.size(16.dp))
                     TextField(
-                        value = "Repeticiones: " + sliderPosition.toInt().toString(),
+                        value = if (showSliderPosition) {
+                            text + sliderPosition.toInt().toString()
+                        } else {
+                            text
+                        },
                         onValueChange = { newValue ->
                             sliderPosition = newValue.toFloat()
                             newValue.toIntOrNull()?.let { intValue ->
@@ -467,6 +471,7 @@ fun ExerciseCard(
 fun ExerciseCardSpeed(
     modifier: Modifier,
     title: String,
+    text: String,
     image: Int,
     range: Pair<Double, Double>,
     currentValue: Int,
@@ -548,7 +553,7 @@ fun ExerciseCardSpeed(
 
                     Spacer(Modifier.size(16.dp))
                     TextField(
-                        value = "Tiempo: %.1f segundos".format(sliderPosition),
+                        value = "$text %.1f segundos".format(sliderPosition),
                         onValueChange = { newValue ->
                             sliderPosition = newValue.toDouble()
                             newValue.toIntOrNull()?.let { intValue ->
@@ -596,6 +601,8 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
     ExerciseCard(
         modifier = modifier,
         title = "Flexiones",
+        text = "Repeticiones: ",
+        showSliderPosition = true,
         image = R.drawable.push_up,
         range = viewModel.pushUpRange,
         currentValue = viewModel.pushPoint,
@@ -611,6 +618,8 @@ fun Abs(modifier: Modifier, viewModel: TgcfViewModel) {
     ExerciseCard(
         modifier = modifier,
         title = "Abdominales",
+        text = "Repeticiones: ",
+        showSliderPosition = true,
         image = R.drawable.abs,
         range = viewModel.absRange,
         currentValue = viewModel.absPoint,
@@ -626,6 +635,7 @@ fun Speed(modifier: Modifier, viewModel: TgcfViewModel) {
     ExerciseCardSpeed(
         modifier = modifier,
         title = "Velocidad",
+        text = "Tiempo: ",
         image = R.drawable.speed,
         range = viewModel.speedRange,
         currentValue = viewModel.speedPoint,
@@ -636,11 +646,24 @@ fun Speed(modifier: Modifier, viewModel: TgcfViewModel) {
     )
 }
 
+//Funcion para formatear el tiempo
+fun formatSecondsToMmSs(seconds: Int): String {
+    val minutes = seconds / 60
+    val remainingSeconds = seconds % 60
+    return String.format("%02d:%02d", minutes, remainingSeconds)
+}
+
 @Composable
 fun Resistance(modifier: Modifier, viewModel: TgcfViewModel) {
+
+    val formatTime = remember(viewModel.runTime) {
+        formatSecondsToMmSs(viewModel.runTime)
+    }
     ExerciseCard(
         modifier = modifier,
         title = "6 KM",
+        text = "Tiempo: $formatTime ",
+        showSliderPosition = false,
         image = R.drawable.resistance,
         range = viewModel.runRange,
         currentValue = viewModel.runPoint,
@@ -650,6 +673,8 @@ fun Resistance(modifier: Modifier, viewModel: TgcfViewModel) {
         }
     )
 }
+
+
 
 
 

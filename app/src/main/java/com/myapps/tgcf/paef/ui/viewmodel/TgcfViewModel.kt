@@ -88,10 +88,14 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
             in 32..36 -> 4
             in 37..41 -> 5
             in 42..46 -> 6
-            in 47..51 -> 7
-            in 52..56 -> 8
-            in 57..61 -> 9
-            else -> 10
+            in 47..49 -> 7
+            in 50..51 -> 8
+            in 52..53 -> 9
+            in 54..55 -> 10
+            in 56..57 -> 11
+            in 58..59 -> 12
+            in 60..61 -> 13
+            else -> 14
         }
         updateAllRanges()
         updateAllScores()
