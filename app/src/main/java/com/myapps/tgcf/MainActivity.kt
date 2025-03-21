@@ -1,5 +1,7 @@
 package com.myapps.tgcf
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,7 +25,9 @@ class MainActivity : ComponentActivity() {
     private val taskViewModel: TgcfViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation=ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
         enableEdgeToEdge()
+
         setContent {
             TgcfTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->

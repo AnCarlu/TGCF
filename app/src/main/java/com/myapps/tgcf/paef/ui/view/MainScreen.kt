@@ -415,6 +415,7 @@ fun ExerciseCard(
                             unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
                             focusedTextColor = textPrimaryColor,
                             unfocusedTextColor = textPrimaryColor,
+                            focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent
                         )
                     )
@@ -440,6 +441,7 @@ fun ExerciseCard(
                             unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
                             focusedTextColor = textPrimaryColor,
                             unfocusedTextColor = textPrimaryColor,
+                            focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent
                         )
                     )
@@ -547,6 +549,7 @@ fun ExerciseCardSpeed(
                             unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
                             focusedTextColor = textPrimaryColor,
                             unfocusedTextColor = textPrimaryColor,
+                            focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent
                         )
                     )
@@ -568,6 +571,7 @@ fun ExerciseCardSpeed(
                             unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
                             focusedTextColor = textPrimaryColor,
                             unfocusedTextColor = textPrimaryColor,
+                            focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent
                         )
                     )
