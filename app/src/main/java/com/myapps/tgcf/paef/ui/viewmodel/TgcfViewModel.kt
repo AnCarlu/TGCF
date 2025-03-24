@@ -16,18 +16,18 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     var isMale by mutableStateOf(true) //Estado para controlar el sexo marcado
     var showAgeDialog by mutableStateOf(false) //Estado para controlar la visibilidad del Dialogo Edad
         private set
-    var pushCount by mutableIntStateOf(0)//
+    var pushCount by mutableIntStateOf(0)//Repeticiones de las flexiones
     var pushPoint by mutableIntStateOf(0)//Puntos de las flexiones
-    var absCount by mutableStateOf(0)
+    var absCount by mutableStateOf(0)//Repeticiones de los abdominales
     var absPoint by mutableStateOf(0)//Puntos de los abdominales
     var speedTime by mutableStateOf(0.0)//Tiempo de velocidad
     var speedPoint by mutableStateOf(0) // Puntos de velocidad
     var runTime by mutableStateOf(0)//Tiempo en la carrera
     var runPoint by mutableStateOf(0)//Puntos en la carrera
-    var pushUpRange by mutableStateOf(0 to 0)//
-    var absRange by mutableStateOf(0 to 0)
-    var speedRange by mutableStateOf(0.0 to 0.0)
-    var runRange by mutableStateOf(0 to 0)
+    var pushUpRange by mutableStateOf(0 to 0)//Rango de flexiones
+    var absRange by mutableStateOf(0 to 0)//Rango de abdominales
+    var speedRange by mutableStateOf(0.0 to 0.0)//Rango de velocidad
+    var runRange by mutableStateOf(0 to 0)//Rango de la carrera
 
     var _ageInput by mutableStateOf(0)
     var ageInput: Int
@@ -101,19 +101,25 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
         updateAllScores()
     }
 
+    //Funcion para actualizar los rangos cuando se actualiza tanto la edad como el genero
     fun updateAllRanges() {
         pushUpRange = ScoreTables.getPushUpRange(ageGroup, isMale)
         absRange = ScoreTables.getAbsRange(ageGroup, isMale)
         speedRange=ScoreTables.getSpeedRange(ageGroup,isMale)
         runRange = ScoreTables.getRunRange(ageGroup, isMale)
+
+        speedTime=speedRange.second
+
     }
 
+    //Funcion para actualizar al nota cuando se actualiza tanto la edad, el genero como las repeticiones
     fun updateAllScores() {
         pushPoint = ScoreTables.getPushUpScore(ageGroup, isMale, pushCount)
         absPoint = ScoreTables.getAbsScore(ageGroup, isMale, absCount)
         runPoint=ScoreTables.getRunScore(ageGroup,isMale,runTime)
         speedPoint = ScoreTables.getSpeedScore(ageGroup, isMale, speedTime)
     }
+
 
 
 }

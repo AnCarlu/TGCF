@@ -6533,7 +6533,8 @@ object ScoreTables {
     fun getScoreHigger(
         table: Map<Int, Map<String, SortedMap<Int, Int>>>, //tabla a la accede
         ageGroup: Int, //grudo de edad
-        isMale: Boolean, value: Int
+        isMale: Boolean,
+        value: Int
     ): Int {
         val gender = if (isMale) "M" else "F"
         val scoresMap = table[ageGroup]?.get(gender) ?: return 0
@@ -6545,27 +6546,6 @@ object ScoreTables {
             }
         }
         return 0 // Si el valor es menor que todas las claves
-    }
-
-    /*
-   Funcion que obtiene la puntuacion cuanto mas bajo el puntuaje, mayor la nota
-    */
-    fun getScoreLower(
-        table: Map<Int, Map<String, SortedMap<Int, Int>>>, //tabla a la accede
-        ageGroup: Int, //grudo de edad
-        isMale: Boolean, value: Int
-    ): Int {
-        val gender = if (isMale) "M" else "F"
-        val scoresMap = table[ageGroup]?.get(gender) ?: return 0
-
-        // Iterar en orden ascendente para encontrar el menor key >= value
-        for (key in scoresMap.keys) {
-            if (value <= key) {
-                return scoresMap[key] ?: 0
-            }
-        }
-        // Si el valor es mayor que todas las claves, retornar el peor puntaje
-        return scoresMap[scoresMap.lastKey()] ?: 0
     }
 
     //Funciones para recuperar la puntuacion
@@ -6594,7 +6574,7 @@ object ScoreTables {
         getScoreHigger(abs, ageGroup, isMale, value)
 
     fun getRunScore(ageGroup: Int, isMale: Boolean, value: Int) =
-        getScoreLower(run, ageGroup, isMale, value)
+        getScoreHigger(run, ageGroup, isMale, value)
 
 
 }

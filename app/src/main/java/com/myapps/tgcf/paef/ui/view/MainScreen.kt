@@ -153,7 +153,7 @@ fun Result(
     val result = remember {
         derivedStateOf {
             (((viewModel.pushPoint + viewModel.absPoint) +
-                    viewModel.speedPoint + viewModel.runPoint) / 4)/10
+                    viewModel.speedPoint + viewModel.runPoint) / 4) / 10
         }
     }
 
@@ -352,7 +352,7 @@ fun ExerciseCard(
             .fillMaxSize()
             .border(
                 width = 4.dp,
-                color = borderColor,
+                color = if (currentValue < 20) errorColor else borderColor,
                 shape = RoundedCornerShape(16.dp)
             ), colors = CardDefaults.cardColors(containerColor = primaryColor),
         shape = RoundedCornerShape(16.dp)
@@ -435,7 +435,7 @@ fun ExerciseCard(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        readOnly = true,
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = primaryColor.copy(alpha = 0.01f),
                             unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
@@ -480,13 +480,13 @@ fun ExerciseCardSpeed(
     onValueChange: (Double) -> Unit
 ) {
     var myText by remember { mutableStateOf(currentValue.toString()) }
-    var sliderPosition by remember { mutableStateOf(range.first) }
+    var sliderPosition by remember { mutableStateOf(range.second) }
     Card(
         modifier
             .fillMaxSize()
             .border(
                 width = 4.dp,
-                color = borderColor,
+                color = if (currentValue < 20) errorColor else borderColor,
                 shape = RoundedCornerShape(16.dp)
             ), colors = CardDefaults.cardColors(containerColor = primaryColor),
         shape = RoundedCornerShape(16.dp)
@@ -535,15 +535,17 @@ fun ExerciseCardSpeed(
                     TextField(
                         value = "Puntos:  $currentValue",
                         onValueChange = { newValue ->
-                            sliderPosition = newValue.toDouble()
-                            newValue.toIntOrNull()?.let { intValue ->
-                                sliderPosition = intValue.toDouble()
-                            }
+//                            sliderPosition = newValue.toDouble()
+//                            newValue.toIntOrNull()?.let { intValue ->
+//                                sliderPosition = intValue.toDouble()
+//                            }
+                            val rounValue = newValue.toDouble()
+                            sliderPosition = rounValue
+                            onValueChange(newValue.toDouble())
                         },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
                         readOnly = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = primaryColor.copy(alpha = 0.01f),
                             unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
@@ -556,7 +558,7 @@ fun ExerciseCardSpeed(
 
                     Spacer(Modifier.size(16.dp))
                     TextField(
-                        value = "$text %.1f segundos".format(sliderPosition),
+                        value = "$text %.1f segundos".format(range.second + range.first - sliderPosition),
                         onValueChange = { newValue ->
                             sliderPosition = newValue.toDouble()
                             newValue.toIntOrNull()?.let { intValue ->
@@ -565,7 +567,7 @@ fun ExerciseCardSpeed(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        readOnly = true,
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = primaryColor.copy(alpha = 0.01f),
                             unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
@@ -579,10 +581,9 @@ fun ExerciseCardSpeed(
                     Slider(
                         value = sliderPosition.toFloat(),
                         onValueChange = { newValue ->
-                            val rounValue = newValue.toDouble()
-                            sliderPosition = rounValue
-                            myText = "%.1f".format(rounValue)
-                            onValueChange(rounValue)
+                            val invertedValue = range.second + range.first - newValue.toDouble()
+                            sliderPosition = newValue.toDouble()
+                            onValueChange(invertedValue)
                         },
                         valueRange = range.first.toFloat()..range.second.toFloat(),
                         steps = ((range.second - range.first) / 0.1).toInt(),
@@ -671,8 +672,11 @@ fun Resistance(modifier: Modifier, viewModel: TgcfViewModel) {
         image = R.drawable.resistance,
         range = viewModel.runRange,
         currentValue = viewModel.runPoint,
-        onValueChange = {
-            viewModel.runTime = it
+        onValueChange = { newValue ->
+            //Variable para que los peores resultados sean mostrados en la parte izquierda del slider
+            val invertedValue =
+                viewModel.runRange.second + viewModel.runRange.first - newValue
+            viewModel.runTime = invertedValue
             viewModel.updateAllScores()
         }
     )
