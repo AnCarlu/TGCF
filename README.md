@@ -32,8 +32,6 @@ Uso
 
 ## Arquitectura
 El proyecto sigue los principios MVVM y Clean Architecture:
-
-Copy
 📁 app/
 ├── 📁 data/        
 ├── 📁 domain/      
@@ -43,8 +41,8 @@ Copy
 │   └── 📁 viewmodel # ViewModels inyectados con Hilt
 
 ## Próximas implementaciones
-- - Room Database
-  - DataStore
+-  Room Database
+-  DataStore
 - **Testing**: JUnit, MockK, Espresso
 
 ## Contacto
