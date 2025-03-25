@@ -30,16 +30,6 @@ Uso
   <img src="screenshots/results-screen.png" width="30%"/> 
 </div>
 
-## Arquitectura
-El proyecto sigue los principios MVVM y Clean Architecture:
-📁 app/
-├── 📁 data/        
-├── 📁 domain/      
-├── 📁 ui/ # Capa de presentación
-│   ├── 📁 model 
-│   ├── 📁 view     # Configuración de Material Theme
-│   └── 📁 viewmodel # ViewModels inyectados con Hilt
-
 ## Próximas implementaciones
 -  Room Database
 -  DataStore
