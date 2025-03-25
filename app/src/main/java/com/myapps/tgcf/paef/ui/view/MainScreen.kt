@@ -1,8 +1,11 @@
 package com.myapps.tgcf.paef.ui.view
 
-import android.media.Image
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,9 +30,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,7 +44,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -48,28 +52,24 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.myapps.tgcf.R
+import com.myapps.tgcf.paef.data.ScoreTables
 import com.myapps.tgcf.paef.ui.viewmodel.TgcfViewModel
 import kotlin.math.roundToInt
 
 val primaryColor = Color(0xFF7689A9)
 val secondaryColor = Color(0xFF2D4671)
 val backIconColor = Color(0xFFAA6939)
-val backgroundColor = Color(0xFFFFFFFF)
 val borderColor = Color(0xFF152C55)
 val textPrimaryColor = Color(0xFF000000)
 val thumbColor = Color(0xFFAA9539)
 val successColor = Color(0xFF4CAF50)
-val warningColor = Color(0xFFFFC107)
 val cancelColor = Color(0xFFEF5350)
 val errorColor = Color(0xFFFF5252)
-val accentColor = Color(0xFFFF4081)
 
-//@Preview
 @Composable
 fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
 
@@ -112,31 +112,40 @@ fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
                     .padding(2.dp), tgfcViewModel
             )
         }
-
-        Row(
-            Modifier
+        Box(
+            modifier = Modifier
                 .weight(1f)
-                .padding(2.dp),
+                .padding(2.dp)
         ) {
-            if (!showApl) {
-                //Card de velocidad
-                Speed(
-                    Modifier
-                        .weight(1f)
-                        .padding(2.dp),
-                    tgfcViewModel
-                )
-                //Card de carrera
-                Resistance(
-                    Modifier
-                        .weight(1f)
-                        .padding(2.dp),
-                    tgfcViewModel
-                )
+            this@Column.AnimatedVisibility(
+                visible = !showApl,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    // Card de velocidad
+                    Speed(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(2.dp),
+                        viewModel = tgfcViewModel
+                    )
+
+                    // Card de carrera
+                    Resistance(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(2.dp),
+                        viewModel = tgfcViewModel
+                    )
+                }
             }
+
         }
-
-
     }
 }
 
@@ -150,13 +159,15 @@ fun Result(
 
     var isManSelected by remember { mutableStateOf(true) } //Variable para cambiar el color del sexo
     // Calculo de la nota final
-    val result = remember {
-        derivedStateOf {
-            (((viewModel.pushPoint + viewModel.absPoint) +
-                    viewModel.speedPoint + viewModel.runPoint) / 4) / 10
-        }
-    }
+    if (isAplChecked) {
+        viewModel.result =
+            ((viewModel.speedPoint.toDouble() + viewModel.runPoint.toDouble()) / 2) / 10
+    } else {
 
+        viewModel.result =
+            (((viewModel.pushPoint.toDouble() + viewModel.absPoint.toDouble()) +
+                    viewModel.speedPoint.toDouble() + viewModel.runPoint.toDouble()) / 4) / 10
+    }
 
     Card(
         modifier
@@ -259,9 +270,10 @@ fun Result(
                         Spacer(Modifier.padding(16.dp))
 
                         TextField(
-                            value = result.value.toString(),
+                            value = viewModel.result.toString(),
                             onValueChange = { },
-                            modifier = Modifier.size(100.dp),
+                            modifier = Modifier.size(120.dp),
+                            maxLines = 1,
                             readOnly = true,
                             textStyle = TextStyle(
                                 fontSize = 40.sp,
@@ -345,7 +357,6 @@ fun ExerciseCard(
     currentValue: Int,
     onValueChange: (Int) -> Unit
 ) {
-    var myText by remember { mutableStateOf(currentValue.toString()) }
     var sliderPosition by remember { mutableStateOf(range.first.toFloat()) }
     Card(
         modifier
@@ -400,12 +411,7 @@ fun ExerciseCard(
 
                     TextField(
                         value = "Puntos:  $currentValue",
-                        onValueChange = { newValue ->
-                            sliderPosition = newValue.toFloat()
-                            newValue.toIntOrNull()?.let { intValue ->
-                                sliderPosition = intValue.toFloat()
-                            }
-                        },
+                        onValueChange = {},
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
                         readOnly = true,
@@ -427,12 +433,7 @@ fun ExerciseCard(
                         } else {
                             text
                         },
-                        onValueChange = { newValue ->
-                            sliderPosition = newValue.toFloat()
-                            newValue.toIntOrNull()?.let { intValue ->
-                                sliderPosition = intValue.toFloat()
-                            }
-                        },
+                        onValueChange = {},
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
                         readOnly = true,
@@ -451,7 +452,6 @@ fun ExerciseCard(
                         onValueChange = { newValue ->
                             val rounValue = newValue.roundToInt().toFloat()
                             sliderPosition = rounValue
-                            myText = newValue.toInt().toString()
                             onValueChange(newValue.toInt())
                         },
                         valueRange = range.first.toFloat()..range.second.toFloat(),
@@ -471,22 +471,31 @@ fun ExerciseCard(
 
 @Composable
 fun ExerciseCardSpeed(
+    viewModel: TgcfViewModel,
     modifier: Modifier,
     title: String,
     text: String,
     image: Int,
     range: Pair<Double, Double>,
-    currentValue: Int,
+    currentValue: Double,
     onValueChange: (Double) -> Unit
 ) {
-    var myText by remember { mutableStateOf(currentValue.toString()) }
-    var sliderPosition by remember { mutableStateOf(range.second) }
+// Calcular posición invertida para el slider
+    val invertedPosition = remember(currentValue) {
+        (range.first + range.second - currentValue).toFloat()
+    }
+
+    var sliderPosition by remember { mutableStateOf(invertedPosition) }
+
+    LaunchedEffect(currentValue) {
+        sliderPosition = (range.first + range.second - currentValue).toFloat()
+    }
     Card(
         modifier
             .fillMaxSize()
             .border(
                 width = 4.dp,
-                color = if (currentValue < 20) errorColor else borderColor,
+                color = if (viewModel.speedPoint < 20) errorColor else borderColor,
                 shape = RoundedCornerShape(16.dp)
             ), colors = CardDefaults.cardColors(containerColor = primaryColor),
         shape = RoundedCornerShape(16.dp)
@@ -533,16 +542,8 @@ fun ExerciseCardSpeed(
                 ) {
 
                     TextField(
-                        value = "Puntos:  $currentValue",
-                        onValueChange = { newValue ->
-//                            sliderPosition = newValue.toDouble()
-//                            newValue.toIntOrNull()?.let { intValue ->
-//                                sliderPosition = intValue.toDouble()
-//                            }
-                            val rounValue = newValue.toDouble()
-                            sliderPosition = rounValue
-                            onValueChange(newValue.toDouble())
-                        },
+                        value = "Puntos:  ${viewModel.speedPoint}",
+                        onValueChange = {},
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
                         readOnly = true,
@@ -558,13 +559,8 @@ fun ExerciseCardSpeed(
 
                     Spacer(Modifier.size(16.dp))
                     TextField(
-                        value = "$text %.1f segundos".format(range.second + range.first - sliderPosition),
-                        onValueChange = { newValue ->
-                            sliderPosition = newValue.toDouble()
-                            newValue.toIntOrNull()?.let { intValue ->
-                                sliderPosition = intValue.toDouble()
-                            }
-                        },
+                        value = "$text %.1f segundos".format(currentValue),
+                        onValueChange = {},
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
                         readOnly = true,
@@ -581,9 +577,8 @@ fun ExerciseCardSpeed(
                     Slider(
                         value = sliderPosition.toFloat(),
                         onValueChange = { newValue ->
-                            val invertedValue = range.second + range.first - newValue.toDouble()
-                            sliderPosition = newValue.toDouble()
-                            onValueChange(invertedValue)
+                            sliderPosition = newValue
+                            onValueChange(newValue.toDouble())
                         },
                         valueRange = range.first.toFloat()..range.second.toFloat(),
                         steps = ((range.second - range.first) / 0.1).toInt(),
@@ -638,20 +633,22 @@ fun Abs(modifier: Modifier, viewModel: TgcfViewModel) {
 @Composable
 fun Speed(modifier: Modifier, viewModel: TgcfViewModel) {
     ExerciseCardSpeed(
+        viewModel = viewModel,
         modifier = modifier,
         title = "Velocidad",
         text = "Tiempo: ",
         image = R.drawable.speed,
         range = viewModel.speedRange,
-        currentValue = viewModel.speedPoint,
-        onValueChange = {
-            viewModel.speedTime = it
+        currentValue = viewModel.speedTime,
+        onValueChange = { newValue ->
+            val invertedValue = viewModel.speedRange.first + viewModel.speedRange.second - newValue
+            viewModel.speedTime = invertedValue
             viewModel.updateAllScores()
         }
     )
 }
 
-//Funcion para formatear el tiempo
+//Funcion para formatear el tiempo para que lo marque en mm:ss
 fun formatSecondsToMmSs(seconds: Int): String {
     val minutes = seconds / 60
     val remainingSeconds = seconds % 60

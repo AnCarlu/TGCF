@@ -1,6 +1,5 @@
 package com.myapps.tgcf
 
-import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -19,6 +18,7 @@ import com.myapps.tgcf.ui.theme.TgcfTheme
 
 
 val backgroundColor = Color(0xFFFFFFFF)
+
 
 class MainActivity : ComponentActivity() {
 

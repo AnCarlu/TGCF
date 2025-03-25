@@ -16,6 +16,7 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     var isMale by mutableStateOf(true) //Estado para controlar el sexo marcado
     var showAgeDialog by mutableStateOf(false) //Estado para controlar la visibilidad del Dialogo Edad
         private set
+    var result by mutableStateOf(0.0)
     var pushCount by mutableIntStateOf(0)//Repeticiones de las flexiones
     var pushPoint by mutableIntStateOf(0)//Puntos de las flexiones
     var absCount by mutableStateOf(0)//Repeticiones de los abdominales
@@ -37,7 +38,11 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
             calculateFinalScore()
         }
 
-    private var ageGroup = 0
+    var ageGroup = 0
+
+    init {
+        speedTime= Double.MAX_VALUE
+    }
 
     //Livedata para mostrar u ocultar las celdas en caso de que esté marcado APL
     private val _showApl = MutableLiveData<Boolean>()
@@ -59,7 +64,6 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     fun openAgeDialog() {
         showAgeDialog = true
         _ageDialog = if (ageInput in 17..61) ageInput else 17
-
     }
 
     //Funcion para cerrar el Dialog de Edad
@@ -107,19 +111,13 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
         absRange = ScoreTables.getAbsRange(ageGroup, isMale)
         speedRange=ScoreTables.getSpeedRange(ageGroup,isMale)
         runRange = ScoreTables.getRunRange(ageGroup, isMale)
-
-        speedTime=speedRange.second
-
     }
 
-    //Funcion para actualizar al nota cuando se actualiza tanto la edad, el genero como las repeticiones
+    //Funcion para actualizar al nota cuando se actualiza tanto la edad, el genero como las repeticiones o el tiempo respectivamente
     fun updateAllScores() {
         pushPoint = ScoreTables.getPushUpScore(ageGroup, isMale, pushCount)
         absPoint = ScoreTables.getAbsScore(ageGroup, isMale, absCount)
         runPoint=ScoreTables.getRunScore(ageGroup,isMale,runTime)
         speedPoint = ScoreTables.getSpeedScore(ageGroup, isMale, speedTime)
     }
-
-
-
 }
