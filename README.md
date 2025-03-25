@@ -22,3 +22,30 @@ Uso
 3. En caso de que sea Apto con Limitiaciones marca la casilla de APL
 4. Introduce tus marcas obtenidas en cada una de las pruebas
 5. Visualiza tu puntuación total
+
+## 📸 Capturas de pantalla
+
+<div align="center">
+  <img src="screenshots/main-screen.png" width="30%"/>
+  <img src="screenshots/results-screen.png" width="30%"/> 
+</div>
+
+## Arquitectura
+El proyecto sigue los principios MVVM y Clean Architecture:
+
+Copy
+📁 app/
+├── 📁 data/        
+├── 📁 domain/      
+├── 📁 ui/ # Capa de presentación
+│   ├── 📁 model 
+│   ├── 📁 view     # Configuración de Material Theme
+│   └── 📁 viewmodel # ViewModels inyectados con Hilt
+
+## Próximas implementaciones
+- - Room Database
+  - DataStore
+- **Testing**: JUnit, MockK, Espresso
+
+## Contacto
+¿Preguntas o sugerencias? ¡Contáctame en adriancarrerolucha93@gmail.com
