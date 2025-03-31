@@ -73,3 +73,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.1.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha02")
 }
+
+kapt{
+    correctErrorTypes=true
+}
