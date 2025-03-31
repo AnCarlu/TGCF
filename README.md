@@ -22,3 +22,18 @@ Uso
 3. En caso de que sea Apto con Limitiaciones marca la casilla de APL
 4. Introduce tus marcas obtenidas en cada una de las pruebas
 5. Visualiza tu puntuación total
+
+## 📸 Capturas de pantalla
+
+<div align="center">
+  <img src="screenshots/main-screen.png" width="30%"/>
+  <img src="screenshots/results-screen.png" width="30%"/> 
+</div>
+
+## Próximas implementaciones
+-  Room Database
+-  DataStore
+- **Testing**: JUnit, MockK, Espresso
+
+## Contacto
+¿Preguntas o sugerencias? ¡Contáctame en adriancarrerolucha93@gmail.com
