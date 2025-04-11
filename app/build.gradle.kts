@@ -72,6 +72,12 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lyfecicleVersion")
     implementation("androidx.compose.runtime:runtime-livedata:1.1.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha02")
+    //Hamcrest
+    testImplementation("org.hamcrest:hamcrest:3.0")
+
+    //Roboelectric
+    testImplementation ("org.robolectric:robolectric:4.9.2")
+    testImplementation ("androidx.arch.core:core-testing:2.2.0")
 }
 
 kapt{
