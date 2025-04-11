@@ -16,7 +16,7 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     var isMale by mutableStateOf(true) //Estado para controlar el sexo marcado
     var showAgeDialog by mutableStateOf(false) //Estado para controlar la visibilidad del Dialogo Edad
         private set
-    var result by mutableStateOf(0.0)
+    var result by mutableStateOf(0.0) //Nota media obtenida
     var pushCount by mutableIntStateOf(0)//Repeticiones de las flexiones
     var pushPoint by mutableIntStateOf(0)//Puntos de las flexiones
     var absCount by mutableStateOf(0)//Repeticiones de los abdominales
@@ -41,7 +41,7 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     var ageGroup = 0
 
     init {
-        speedTime= Double.MAX_VALUE
+        speedTime = Double.MAX_VALUE
     }
 
     //Livedata para mostrar u ocultar las celdas en caso de que esté marcado APL
@@ -109,7 +109,7 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     fun updateAllRanges() {
         pushUpRange = ScoreTables.getPushUpRange(ageGroup, isMale)
         absRange = ScoreTables.getAbsRange(ageGroup, isMale)
-        speedRange=ScoreTables.getSpeedRange(ageGroup,isMale)
+        speedRange = ScoreTables.getSpeedRange(ageGroup, isMale)
         runRange = ScoreTables.getRunRange(ageGroup, isMale)
     }
 
@@ -117,7 +117,7 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     fun updateAllScores() {
         pushPoint = ScoreTables.getPushUpScore(ageGroup, isMale, pushCount)
         absPoint = ScoreTables.getAbsScore(ageGroup, isMale, absCount)
-        runPoint=ScoreTables.getRunScore(ageGroup,isMale,runTime)
+        runPoint = ScoreTables.getRunScore(ageGroup, isMale, runTime)
         speedPoint = ScoreTables.getSpeedScore(ageGroup, isMale, speedTime)
     }
 }
