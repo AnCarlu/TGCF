@@ -186,7 +186,8 @@ fun Result(
                 Box(modifier = Modifier.padding(top = 16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         //Icono Hombre
-                        Icon(painter = painterResource(R.drawable.man),
+                        Icon(
+                            painter = painterResource(R.drawable.man),
                             contentDescription = "Man",
                             modifier = Modifier
                                 .size(96.dp)
@@ -199,7 +200,8 @@ fun Result(
                                 .alpha(if (isManSelected) 1f else 0.8f),
                             tint = if (isManSelected) backIconColor else Color.Gray)
                         //Icono Mujer
-                        Icon(painter = painterResource(R.drawable.woman),
+                        Icon(
+                            painter = painterResource(R.drawable.woman),
                             contentDescription = "Woman",
                             modifier = Modifier
                                 .size(96.dp)
@@ -305,7 +307,8 @@ fun Age(viewModel: TgcfViewModel) {
     var showPlaceholder by remember { mutableStateOf(true) } //Estado para mostrar la palabra "Edad" si la edad está vacia
 
 
-    TextField(value = if (viewModel.ageInput == 0) "" else viewModel.ageInput.toString(),
+    TextField(
+        value = if (viewModel.ageInput == 0) "" else viewModel.ageInput.toString(),
         onValueChange = {},
         placeholder = {
             //Si no se ha añadido aun la edad se muestra la palabra edad
@@ -363,7 +366,7 @@ fun ExerciseCard(
             .fillMaxSize()
             .border(
                 width = 4.dp,
-                color = if (currentValue < 20) errorColor else borderColor,
+                color = if (currentValue == 0) borderColor else if (currentValue < 20) errorColor else borderColor,
                 shape = RoundedCornerShape(16.dp)
             ), colors = CardDefaults.cardColors(containerColor = primaryColor),
         shape = RoundedCornerShape(16.dp)
@@ -495,7 +498,7 @@ fun ExerciseCardSpeed(
             .fillMaxSize()
             .border(
                 width = 4.dp,
-                color = if (viewModel.speedPoint < 20) errorColor else borderColor,
+                color = if (currentValue == 0.0) borderColor else if (currentValue < 20) errorColor else borderColor,
                 shape = RoundedCornerShape(16.dp)
             ), colors = CardDefaults.cardColors(containerColor = primaryColor),
         shape = RoundedCornerShape(16.dp)

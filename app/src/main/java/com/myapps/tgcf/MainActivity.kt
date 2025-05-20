@@ -10,32 +10,53 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.center
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RadialGradientShader
+import androidx.compose.ui.graphics.Shader
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.core.view.WindowCompat
 import com.myapps.tgcf.paef.ui.view.Screen
 import com.myapps.tgcf.paef.ui.viewmodel.TgcfViewModel
 import com.myapps.tgcf.ui.theme.TgcfTheme
 
 
-val backgroundColor = Color(0xFFFFFFFF)
-
-
 class MainActivity : ComponentActivity() {
 
-    private val taskViewModel: TgcfViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation=ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
-        enableEdgeToEdge()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
+            val gradienteRadialGrande = remember {
+                object : ShaderBrush() {
+                    override fun createShader(size: Size): Shader {
+                        val dimensionMayor = maxOf(size.height, size.width)
+                        return RadialGradientShader(
+                            colors = listOf(Color(0xFF2be4dc), Color(0xFF243484)),
+                            center = size.center,
+                            radius = dimensionMayor / 2f,
+                            colorStops = listOf(0f, 0.95f)
+                        )
+                    }
+                }
+            }
             TgcfTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Screen(Modifier.padding(innerPadding).background(color = backgroundColor), taskViewModel)
-                    //Screen()
+                    val taskViewModel: TgcfViewModel by viewModels()
+                    Screen(
+                        Modifier
+                            .padding(innerPadding)
+                            .background(gradienteRadialGrande),
+                        taskViewModel
+                    )
                 }
             }
         }
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT
     }
 }
 
