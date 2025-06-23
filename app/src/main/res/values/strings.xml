@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Tgcf</string>
+    <string name="accept">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="infoTitleOpen">¿Como utilizar la aplicación?</string>
+    <string name="infoUseApp">Para utilizar la aplicación primero debes elegir tu edad y sexo</string>
 </resources>

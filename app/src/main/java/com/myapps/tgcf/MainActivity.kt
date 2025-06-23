@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.RadialGradientShader
 import androidx.compose.ui.graphics.Shader
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.core.view.WindowCompat
+import com.myapps.tgcf.paef.ui.view.InfoDialog
 import com.myapps.tgcf.paef.ui.view.Screen
 import com.myapps.tgcf.paef.ui.viewmodel.TgcfViewModel
 import com.myapps.tgcf.ui.theme.TgcfTheme
@@ -31,6 +32,7 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
+            InfoDialog()
             val gradienteRadialGrande = remember {
                 object : ShaderBrush() {
                     override fun createShader(size: Size): Shader {
