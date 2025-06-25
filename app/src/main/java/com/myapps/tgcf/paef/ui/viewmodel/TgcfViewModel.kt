@@ -1,6 +1,8 @@
 package com.myapps.tgcf.paef.ui.viewmodel
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -14,31 +16,81 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
 
 
     var isMale by mutableStateOf(true) //Estado para controlar el sexo marcado
+    var ageInput by mutableIntStateOf(17) //Valor de edad, inicializado a 17
+    var isAplChecked by mutableStateOf(false) //Estado para controlar si se ha marcado APL
+
     var showAgeDialog by mutableStateOf(false) //Estado para controlar la visibilidad del Dialogo Edad
         private set
-    var result by mutableStateOf(0.0) //Nota media obtenida
+
+    //Repeticiones por prueba
     var pushCount by mutableIntStateOf(0)//Repeticiones de las flexiones
-    var pushPoint by mutableIntStateOf(0)//Puntos de las flexiones
-    var absCount by mutableStateOf(0)//Repeticiones de los abdominales
-    var absPoint by mutableStateOf(0)//Puntos de los abdominales
-    var speedTime by mutableStateOf(0.0)//Tiempo de velocidad
-    var speedPoint by mutableStateOf(0) // Puntos de velocidad
-    var runTime by mutableStateOf(0)//Tiempo en la carrera
-    var runPoint by mutableStateOf(0)//Puntos en la carrera
-    var pushUpRange by mutableStateOf(0 to 0)//Rango de flexiones
-    var absRange by mutableStateOf(0 to 0)//Rango de abdominales
-    var speedRange by mutableStateOf(0.0 to 0.0)//Rango de velocidad
-    var runRange by mutableStateOf(0 to 0)//Rango de la carrera
+    var absCount by mutableIntStateOf(0)//Repeticiones de los abdominales
+    var speedTime by mutableDoubleStateOf(0.0)//Tiempo de velocidad
+    var runTime by mutableIntStateOf(0)//Tiempo en la carrera
 
-    var _ageInput by mutableStateOf(0)
-    var ageInput: Int
-        get() = _ageInput
-        set(value) {
-            _ageInput = value
-            calculateFinalScore()
+    /*
+    Utilizo derivedStateOf() para mejorar el rendimiento de la aplicación.
+    De esta manera no consume tantos recursos al no tener que recomponer la interfaz de usuario con cada cambio
+     */
+
+    //Rango de cada prueba, derivan de ageGroup y isMale
+    val pushUpRange by derivedStateOf {
+        ScoreTables.getPushUpRange(ageGroup, isMale)
+    }
+    val absRange by derivedStateOf {
+        ScoreTables.getAbsRange(ageGroup, isMale)
+    }
+    val speedRange by derivedStateOf {
+        ScoreTables.getSpeedRange(ageGroup, isMale)
+    }
+    val runRange by derivedStateOf {
+        ScoreTables.getRunRange(ageGroup, isMale)
+    }
+
+    //Puntos en cada prueba, derivan de ageGroup, isMale y de las repeticiones de cada prueba (pushCount, absCount...)
+    val pushPoint by derivedStateOf {
+        ScoreTables.getPushUpScore(ageGroup, isMale, pushCount)
+    }
+    val absPoint by derivedStateOf {
+        ScoreTables.getAbsScore(ageGroup, isMale, absCount)
+    }
+    val runPoint by derivedStateOf {
+        ScoreTables.getRunScore(ageGroup, isMale, runTime)
+    }
+    val speedPoint by derivedStateOf {
+        ScoreTables.getSpeedScore(ageGroup, isMale, speedTime)
+    }
+
+
+    private val ageGroup by derivedStateOf {
+        when (ageInput) {
+            in 17..21 -> 1
+            in 22..26 -> 2
+            in 27..31 -> 3
+            in 32..36 -> 4
+            in 37..41 -> 5
+            in 42..46 -> 6
+            in 47..49 -> 7
+            in 50..51 -> 8
+            in 52..53 -> 9
+            in 54..55 -> 10
+            in 56..57 -> 11
+            in 58..59 -> 12
+            in 60..61 -> 13
+            else -> 14
         }
+    }
 
-    var ageGroup = 0
+    //Calculo para la nota final
+    val result by derivedStateOf {
+        var totalScore=if (isAplChecked) {
+            ((speedPoint.toDouble() + runPoint.toDouble()) / 2)
+        } else {
+            (((pushPoint.toDouble() + absPoint.toDouble()) +
+                    speedPoint.toDouble() + runPoint.toDouble()) / 4)
+        }
+        "%.2f".format(totalScore / 10.0).replace(',', '.').toDouble()
+    }
 
     init {
         speedTime = Double.MAX_VALUE
@@ -74,7 +126,6 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
     //Funcion para confirmar la seleccion de Edad
     fun confirmAgeSelect() {
         ageInput = _ageDialog
-        calculateFinalScore()
         closeAgeDialog()
     }
 
@@ -83,41 +134,4 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
         _ageDialog = value.toInt()
     }
 
-    //Calcular el rango de edad para las tablas de los ejercicios
-    fun calculateFinalScore() {
-        ageGroup = when (ageInput) {
-            in 17..21 -> 1
-            in 22..26 -> 2
-            in 27..31 -> 3
-            in 32..36 -> 4
-            in 37..41 -> 5
-            in 42..46 -> 6
-            in 47..49 -> 7
-            in 50..51 -> 8
-            in 52..53 -> 9
-            in 54..55 -> 10
-            in 56..57 -> 11
-            in 58..59 -> 12
-            in 60..61 -> 13
-            else -> 14
-        }
-        updateAllRanges()
-        updateAllScores()
-    }
-
-    //Funcion para actualizar los rangos cuando se actualiza tanto la edad como el genero
-    fun updateAllRanges() {
-        pushUpRange = ScoreTables.getPushUpRange(ageGroup, isMale)
-        absRange = ScoreTables.getAbsRange(ageGroup, isMale)
-        speedRange = ScoreTables.getSpeedRange(ageGroup, isMale)
-        runRange = ScoreTables.getRunRange(ageGroup, isMale)
-    }
-
-    //Funcion para actualizar al nota cuando se actualiza tanto la edad, el genero como las repeticiones o el tiempo respectivamente
-    fun updateAllScores() {
-        pushPoint = ScoreTables.getPushUpScore(ageGroup, isMale, pushCount)
-        absPoint = ScoreTables.getAbsScore(ageGroup, isMale, absCount)
-        runPoint = ScoreTables.getRunScore(ageGroup, isMale, runTime)
-        speedPoint = ScoreTables.getSpeedScore(ageGroup, isMale, speedTime)
-    }
 }

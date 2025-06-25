@@ -158,16 +158,6 @@ fun Result(
 ) {
 
     var isManSelected by remember { mutableStateOf(true) } //Variable para cambiar el color del sexo
-    // Calculo de la nota final
-    if (isAplChecked) {
-        viewModel.result =
-            ((viewModel.speedPoint.toDouble() + viewModel.runPoint.toDouble()) / 2) / 10
-    } else {
-
-        viewModel.result =
-            (((viewModel.pushPoint.toDouble() + viewModel.absPoint.toDouble()) +
-                    viewModel.speedPoint.toDouble() + viewModel.runPoint.toDouble()) / 4) / 10
-    }
 
     Card(
         modifier
@@ -194,8 +184,8 @@ fun Result(
                                 .clickable {
                                     isManSelected = true
                                     viewModel.isMale = true
-                                    viewModel.updateAllRanges()
-                                    viewModel.updateAllScores()
+//                                    viewModel.updateAllRanges()
+//                                    viewModel.updateAllScores()
                                 }
                                 .alpha(if (isManSelected) 1f else 0.8f),
                             tint = if (isManSelected) backIconColor else Color.Gray)
@@ -208,8 +198,8 @@ fun Result(
                                 .clickable {
                                     isManSelected = false
                                     viewModel.isMale = false
-                                    viewModel.updateAllRanges()
-                                    viewModel.updateAllScores()
+//                                    viewModel.updateAllRanges()
+//                                    viewModel.updateAllScores()
                                 }
                                 .alpha(if (isManSelected) 0.8f else 1f),
                             tint = if (!isManSelected) backIconColor else Color.Gray)
@@ -498,7 +488,7 @@ fun ExerciseCardSpeed(
             .fillMaxSize()
             .border(
                 width = 4.dp,
-                color = if (currentValue == 0.0) borderColor else if (currentValue < 20) errorColor else borderColor,
+                color = if (currentValue == 0.0) borderColor else if (currentValue <= 20.0) errorColor else borderColor,
                 shape = RoundedCornerShape(16.dp)
             ), colors = CardDefaults.cardColors(containerColor = primaryColor),
         shape = RoundedCornerShape(16.dp)
@@ -611,7 +601,7 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
         currentValue = viewModel.pushPoint,
         onValueChange = {
             viewModel.pushCount = it
-            viewModel.updateAllScores()
+
         }
     )
 }
@@ -628,7 +618,6 @@ fun Abs(modifier: Modifier, viewModel: TgcfViewModel) {
         currentValue = viewModel.absPoint,
         onValueChange = {
             viewModel.absCount = it
-            viewModel.updateAllScores()
         }
     )
 }
@@ -646,7 +635,6 @@ fun Speed(modifier: Modifier, viewModel: TgcfViewModel) {
         onValueChange = { newValue ->
             val invertedValue = viewModel.speedRange.first + viewModel.speedRange.second - newValue
             viewModel.speedTime = invertedValue
-            viewModel.updateAllScores()
         }
     )
 }
@@ -677,7 +665,6 @@ fun Resistance(modifier: Modifier, viewModel: TgcfViewModel) {
             val invertedValue =
                 viewModel.runRange.second + viewModel.runRange.first - newValue
             viewModel.runTime = invertedValue
-            viewModel.updateAllScores()
         }
     )
 }
