@@ -61,7 +61,6 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
         ScoreTables.getSpeedScore(ageGroup, isMale, speedTime)
     }
 
-
     private val ageGroup by derivedStateOf {
         when (ageInput) {
             in 17..21 -> 1

@@ -24,10 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.myapps.tgcf.R
 
 
 @Composable
@@ -56,7 +58,7 @@ fun AgeDialog(
             ) {
 
                 Text(
-                    "Añade tu edad",
+                    stringResource(R.string.ageInput),
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 16.dp),
@@ -116,7 +118,7 @@ fun AgeDialog(
                             .testTag("ButtonCancel1")
                     ) {
                         Text(
-                            text = "Cancelar",
+                            text = stringResource(R.string.cancel),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = textPrimaryColor
@@ -134,7 +136,7 @@ fun AgeDialog(
                             .weight(1f),
                     ) {
                         Text(
-                            text = "Añadir",
+                            text = stringResource(R.string.accept),
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                             color = textPrimaryColor

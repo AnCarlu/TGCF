@@ -31,7 +31,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
@@ -46,6 +45,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -54,9 +54,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.myapps.tgcf.R
-import com.myapps.tgcf.paef.data.ScoreTables
 import com.myapps.tgcf.paef.ui.viewmodel.TgcfViewModel
 import kotlin.math.roundToInt
 
@@ -304,7 +302,7 @@ fun Age(viewModel: TgcfViewModel) {
             //Si no se ha añadido aun la edad se muestra la palabra edad
             if (showPlaceholder) {
                 Text(
-                    "Edad", style = TextStyle(
+                    stringResource(R.string.age), style = TextStyle(
                         fontStyle = FontStyle.Italic,
                         fontSize = 16.sp,
                         fontFamily = FontFamily.SansSerif,
@@ -403,7 +401,7 @@ fun ExerciseCard(
                 ) {
 
                     TextField(
-                        value = "Puntos:  $currentValue",
+                        value = stringResource(R.string.point) + currentValue,
                         onValueChange = {},
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
@@ -478,8 +476,9 @@ fun ExerciseCardSpeed(
         (range.first + range.second - currentValue).toFloat()
     }
 
-    var sliderPosition by remember { mutableStateOf(invertedPosition) }
+    var sliderPosition by remember { mutableFloatStateOf(invertedPosition) }
 
+    //Corrutina para que cambie el valor del slider cuando se cambia el valor de la variable currentValue
     LaunchedEffect(currentValue) {
         sliderPosition = (range.first + range.second - currentValue).toFloat()
     }
@@ -488,7 +487,9 @@ fun ExerciseCardSpeed(
             .fillMaxSize()
             .border(
                 width = 4.dp,
-                color = if (currentValue == 0.0) borderColor else if (currentValue <= 20.0) errorColor else borderColor,
+                color = if (currentValue == 0.0) borderColor
+                else if (currentValue <= 20.0) errorColor
+                else borderColor,
                 shape = RoundedCornerShape(16.dp)
             ), colors = CardDefaults.cardColors(containerColor = primaryColor),
         shape = RoundedCornerShape(16.dp)
@@ -593,8 +594,8 @@ fun ExerciseCardSpeed(
 fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
     ExerciseCard(
         modifier = modifier,
-        title = "Flexiones",
-        text = "Repeticiones: ",
+        title = stringResource(R.string.push),
+        text = stringResource(R.string.repeat),
         showSliderPosition = true,
         image = R.drawable.push_up,
         range = viewModel.pushUpRange,
@@ -610,8 +611,8 @@ fun Push(modifier: Modifier, viewModel: TgcfViewModel) {
 fun Abs(modifier: Modifier, viewModel: TgcfViewModel) {
     ExerciseCard(
         modifier = modifier,
-        title = "Abdominales",
-        text = "Repeticiones: ",
+        title = stringResource(R.string.abs),
+        text = stringResource(R.string.repeat),
         showSliderPosition = true,
         image = R.drawable.abs,
         range = viewModel.absRange,
@@ -627,8 +628,8 @@ fun Speed(modifier: Modifier, viewModel: TgcfViewModel) {
     ExerciseCardSpeed(
         viewModel = viewModel,
         modifier = modifier,
-        title = "Velocidad",
-        text = "Tiempo: ",
+        title = stringResource(R.string.speed),
+        text = stringResource(R.string.time),
         image = R.drawable.speed,
         range = viewModel.speedRange,
         currentValue = viewModel.speedTime,
@@ -654,8 +655,8 @@ fun Resistance(modifier: Modifier, viewModel: TgcfViewModel) {
     }
     ExerciseCard(
         modifier = modifier,
-        title = "6 KM",
-        text = "Tiempo: $formatTime ",
+        title = stringResource(R.string.run),
+        text = stringResource(R.string.time) + formatTime,
         showSliderPosition = false,
         image = R.drawable.resistance,
         range = viewModel.runRange,

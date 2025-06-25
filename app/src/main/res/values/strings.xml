@@ -4,4 +4,13 @@
     <string name="cancel">Cancelar</string>
     <string name="infoTitleOpen">¿Como utilizar la aplicación?</string>
     <string name="infoUseApp">Para utilizar la aplicación primero debes elegir tu edad y sexo</string>
+    <string name="age">Edad</string>
+    <string name="point">Puntos: </string>
+    <string name="time">Tiempo: </string>
+    <string name="repeat">Repeticiones :</string>
+    <string name="push">Flexiones</string>
+    <string name="abs">Abdominales</string>
+    <string name="speed">Velocidad</string>
+    <string name="run">Carrera de 6 KM</string>
+    <string name="ageInput">Añade tu edad</string>
 </resources>
