@@ -16,7 +16,7 @@ class TgcfViewModel @Inject constructor() : ViewModel() {
 
 
     var isMale by mutableStateOf(true) //Estado para controlar el sexo marcado
-    var ageInput by mutableIntStateOf(17) //Valor de edad, inicializado a 17
+    var ageInput by mutableIntStateOf(0) //Valor de edad, inicializado a 17
     var isAplChecked by mutableStateOf(false) //Estado para controlar si se ha marcado APL
 
     var showAgeDialog by mutableStateOf(false) //Estado para controlar la visibilidad del Dialogo Edad

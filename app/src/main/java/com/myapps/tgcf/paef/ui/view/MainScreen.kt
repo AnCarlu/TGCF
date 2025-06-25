@@ -76,6 +76,7 @@ fun Screen(modifier: Modifier, tgfcViewModel: TgcfViewModel) {
      */
     val showApl: Boolean by tgfcViewModel.showApl.observeAsState(false)
 
+
     Column(modifier.fillMaxSize()) {
         //Card del Sexo, Edad y el resultado de la nota
         Result(
@@ -182,8 +183,6 @@ fun Result(
                                 .clickable {
                                     isManSelected = true
                                     viewModel.isMale = true
-//                                    viewModel.updateAllRanges()
-//                                    viewModel.updateAllScores()
                                 }
                                 .alpha(if (isManSelected) 1f else 0.8f),
                             tint = if (isManSelected) backIconColor else Color.Gray)
@@ -196,8 +195,6 @@ fun Result(
                                 .clickable {
                                     isManSelected = false
                                     viewModel.isMale = false
-//                                    viewModel.updateAllRanges()
-//                                    viewModel.updateAllScores()
                                 }
                                 .alpha(if (isManSelected) 0.8f else 1f),
                             tint = if (!isManSelected) backIconColor else Color.Gray)
@@ -247,7 +244,7 @@ fun Result(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            "Nota Final",
+                            stringResource(R.string.finalResult),
                             style = TextStyle(
                                 color = textPrimaryColor,
                                 fontSize = 24.sp,
@@ -349,6 +346,15 @@ fun ExerciseCard(
     onValueChange: (Int) -> Unit
 ) {
     var sliderPosition by remember { mutableStateOf(range.first.toFloat()) }
+    //Variable para los colores de los TextField de las Card
+    val colorsTextField = TextFieldDefaults.colors(
+        focusedContainerColor = primaryColor.copy(alpha = 0.01f),
+        unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
+        focusedTextColor = textPrimaryColor,
+        unfocusedTextColor = textPrimaryColor,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent
+    )
     Card(
         modifier
             .fillMaxSize()
@@ -407,14 +413,7 @@ fun ExerciseCard(
                         maxLines = 1,
                         readOnly = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = primaryColor.copy(alpha = 0.01f),
-                            unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
-                            focusedTextColor = textPrimaryColor,
-                            unfocusedTextColor = textPrimaryColor,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        )
+                        colors = colorsTextField
                     )
 
                     Spacer(Modifier.size(16.dp))
@@ -428,14 +427,7 @@ fun ExerciseCard(
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
                         readOnly = true,
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = primaryColor.copy(alpha = 0.01f),
-                            unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
-                            focusedTextColor = textPrimaryColor,
-                            unfocusedTextColor = textPrimaryColor,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        )
+                        colors = colorsTextField
                     )
 
                     Slider(
@@ -471,10 +463,19 @@ fun ExerciseCardSpeed(
     currentValue: Double,
     onValueChange: (Double) -> Unit
 ) {
-// Calcular posición invertida para el slider
+    // Calcular posición invertida para el slider
     val invertedPosition = remember(currentValue) {
         (range.first + range.second - currentValue).toFloat()
     }
+    //Variable para los colores de los TextField de las Card
+    val colorsTextField = TextFieldDefaults.colors(
+        focusedContainerColor = primaryColor.copy(alpha = 0.01f),
+        unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
+        focusedTextColor = textPrimaryColor,
+        unfocusedTextColor = textPrimaryColor,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent
+    )
 
     var sliderPosition by remember { mutableFloatStateOf(invertedPosition) }
 
@@ -541,14 +542,7 @@ fun ExerciseCardSpeed(
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
                         readOnly = true,
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = primaryColor.copy(alpha = 0.01f),
-                            unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
-                            focusedTextColor = textPrimaryColor,
-                            unfocusedTextColor = textPrimaryColor,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        )
+                        colors = colorsTextField
                     )
 
                     Spacer(Modifier.size(16.dp))
@@ -558,14 +552,7 @@ fun ExerciseCardSpeed(
                         modifier = Modifier.fillMaxWidth(),
                         maxLines = 1,
                         readOnly = true,
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = primaryColor.copy(alpha = 0.01f),
-                            unfocusedContainerColor = primaryColor.copy(alpha = 0.01f),
-                            focusedTextColor = textPrimaryColor,
-                            unfocusedTextColor = textPrimaryColor,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        )
+                        colors = colorsTextField
                     )
 
                     Slider(

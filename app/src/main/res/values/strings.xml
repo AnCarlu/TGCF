@@ -13,4 +13,5 @@
     <string name="speed">Velocidad</string>
     <string name="run">Carrera de 6 KM</string>
     <string name="ageInput">Añade tu edad</string>
+    <string name="finalResult">Nota Final</string>"
 </resources>
